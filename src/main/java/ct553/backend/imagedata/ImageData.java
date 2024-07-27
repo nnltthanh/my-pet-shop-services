@@ -28,6 +28,6 @@ public class ImageData {
     @Column(columnDefinition = "TEXT")
     private String path;
 
-    private String type; // product , avatar , post
+    private ImageDataType type;
 
 }

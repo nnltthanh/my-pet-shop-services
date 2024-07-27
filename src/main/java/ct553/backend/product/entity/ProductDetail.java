@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,11 +38,12 @@ public class ProductDetail {
     private int sold;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "image_data_id", nullable = true)
+    @JoinColumn(name = "image_data_id")
     private ImageData imageData;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
+    @NotNull(message = "Reference product is missing")
     private Product product;
 
 }

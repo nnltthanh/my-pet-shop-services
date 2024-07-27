@@ -21,8 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 import ct553.backend.CloudinaryService;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.imagedata.ImageDataService;
+import ct553.backend.imagedata.ImageDataType;
 import ct553.backend.product.entity.Product;
 import ct553.backend.product.entity.ProductDetail;
+import jakarta.validation.Valid;
+
 // @CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/products")
@@ -51,9 +54,8 @@ public class ProductResource {
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-
     @PostMapping
-    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+    public ResponseEntity<Product> addProduct(@Valid @RequestBody Product product) {
         this.productService.addProduct(product);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
@@ -70,7 +72,8 @@ public class ProductResource {
     }
 
     @PutMapping(value = "/{productId}/upload")
-    public ResponseEntity<?> uploadProductImage(@PathVariable Long productId, @RequestParam("images") List<MultipartFile> files)
+    public ResponseEntity<?> uploadProductImage(@PathVariable Long productId,
+            @RequestParam("images") List<MultipartFile> files)
             throws IOException {
         StringBuilder imageUrls = new StringBuilder();
 
@@ -82,15 +85,14 @@ public class ProductResource {
             if (multipartFile != files.get(files.size() - 1))
                 imageUrls.append(", ");
         }
-        
-        ImageData data = new ImageData(null, imageUrls.toString(), "PRODUCT");
+
+        ImageData data = new ImageData(null, imageUrls.toString(), ImageDataType.PRODUCT);
         data = this.imageDataService.addImageData(data);
 
         Product product = this.productService.updateProductImages(productId, data);
 
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProductById(@PathVariable Long id) {
@@ -124,13 +126,14 @@ public class ProductResource {
 
     @PostMapping(value = "/{productId}/details")
     public ResponseEntity<ProductDetail> addProductDetail(@PathVariable Long productId,
-                                                          @RequestBody ProductDetail productDetail) {
+            @RequestBody ProductDetail productDetail) {
         this.productService.addProductDetail(productId, productDetail);
         return new ResponseEntity<>(productDetail, HttpStatus.CREATED);
     }
 
     @PutMapping("/{productId}/details/{id}")
-    public ResponseEntity<?> updateProductDetail(@PathVariable Long id, @RequestBody ProductDetail updatedProductDetailInfo) {
+    public ResponseEntity<?> updateProductDetail(@PathVariable Long id,
+            @RequestBody ProductDetail updatedProductDetailInfo) {
         ProductDetail existingProductDetail = this.productService.findProductDetailById(id);
         if (existingProductDetail == null) {
             return new ResponseEntity<>("Can not find product detail to update", HttpStatus.NOT_FOUND);
@@ -142,7 +145,8 @@ public class ProductResource {
     }
 
     @PutMapping(value = "/{productId}/details/{id}/upload")
-    public ResponseEntity<?> upload(@PathVariable Long productId, @PathVariable Long id, @RequestParam("images") List<MultipartFile> files)
+    public ResponseEntity<?> upload(@PathVariable Long productId, @PathVariable Long id,
+            @RequestParam("images") List<MultipartFile> files)
             throws IOException {
         StringBuilder imageUrls = new StringBuilder();
 
@@ -157,7 +161,7 @@ public class ProductResource {
 
         ImageData imageData = new ImageData();
         imageData.setPath(imageUrls.toString());
-        imageData.setType("product");
+        imageData.setType(ImageDataType.PRODUCT_DETAIL);
 
         ProductDetail detail = this.productService.updateProductDetailImageData(id, imageData);
 

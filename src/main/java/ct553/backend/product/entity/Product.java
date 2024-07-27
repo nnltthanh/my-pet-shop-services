@@ -4,11 +4,11 @@ import java.util.Date;
 
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import ct553.backend.imagedata.ImageData;
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,11 +20,13 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Component
+@Validated
 @Entity
 @Data
 @Table(name = "product")
@@ -38,8 +40,11 @@ public class Product {
     private Long id;
 
     @Column(nullable = false)
-    @Nonnull
+    @NotNull(message = "Name is missing")
     private String name;
+
+    @Column
+    private String engName;
 
     @Column(columnDefinition = "TEXT")
     private String description;

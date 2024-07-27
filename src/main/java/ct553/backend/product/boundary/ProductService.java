@@ -30,6 +30,7 @@ public class ProductService {
     private ProductDetailRepository productDetailRepository;
 
     void addProduct(Product product) {
+        product.setEngName(this.deAccent(product.getName()));
         this.productRepository.save(product);
     }
 
@@ -45,9 +46,12 @@ public class ProductService {
         Product existingProduct = this.productRepository.findById(id).orElse(null);
 
         if (existingProduct != null) {
-            existingProduct.setName(productUpdateInfo.getName() != null ? productUpdateInfo.getName() : existingProduct.getName());
-            existingProduct.setName(productUpdateInfo.getDescription() != null ? productUpdateInfo.getDescription() : existingProduct.getDescription());
-            existingProduct.setImageData(productUpdateInfo.getImageData() != null ? productUpdateInfo.getImageData() : existingProduct.getImageData());
+            existingProduct.setName(
+                    productUpdateInfo.getName() != null ? productUpdateInfo.getName() : existingProduct.getName());
+            existingProduct.setName(productUpdateInfo.getDescription() != null ? productUpdateInfo.getDescription()
+                    : existingProduct.getDescription());
+            existingProduct.setImageData(productUpdateInfo.getImageData() != null ? productUpdateInfo.getImageData()
+                    : existingProduct.getImageData());
             this.productRepository.save(existingProduct);
             return existingProduct;
         } else {
@@ -86,10 +90,16 @@ public class ProductService {
         ProductDetail existingProductDetail = this.productDetailRepository.findById(id).orElse(null);
 
         if (Objects.nonNull(existingProductDetail)) {
-            existingProductDetail.setUnit(productDetailUpdateInfo.getUnit() != null ? productDetailUpdateInfo.getUnit() : existingProductDetail.getUnit());
-            existingProductDetail.setQuantity(productDetailUpdateInfo.getQuantity() > 0 ? productDetailUpdateInfo.getQuantity() : existingProductDetail.getQuantity());
-            existingProductDetail.setSold(productDetailUpdateInfo.getSold() >= 0 ? productDetailUpdateInfo.getSold() : existingProductDetail.getSold());
-            existingProductDetail.setImageData(productDetailUpdateInfo.getImageData() != null ? productDetailUpdateInfo.getImageData() : existingProductDetail.getImageData());
+            existingProductDetail.setUnit(productDetailUpdateInfo.getUnit() != null ? productDetailUpdateInfo.getUnit()
+                    : existingProductDetail.getUnit());
+            existingProductDetail
+                    .setQuantity(productDetailUpdateInfo.getQuantity() > 0 ? productDetailUpdateInfo.getQuantity()
+                            : existingProductDetail.getQuantity());
+            existingProductDetail.setSold(productDetailUpdateInfo.getSold() >= 0 ? productDetailUpdateInfo.getSold()
+                    : existingProductDetail.getSold());
+            existingProductDetail.setImageData(
+                    productDetailUpdateInfo.getImageData() != null ? productDetailUpdateInfo.getImageData()
+                            : existingProductDetail.getImageData());
 
             this.productDetailRepository.save(existingProductDetail);
             return existingProductDetail;
@@ -121,23 +131,19 @@ public class ProductService {
 
         for (Product product : filteredProducts) {
             this.getAllProductDetails(product.getId())
-                .stream()
-                .forEach(productDetail -> 
-                    productSales.put(
-                        product.getId(), 
-                        productSales.get(product.getId()) == null ?
-                        Integer.valueOf(productDetail.getSold()) :
-                        Integer.valueOf(productDetail.getSold()) + productSales.get(product.getId())
-                    )
-                );
+                    .stream()
+                    .forEach(productDetail -> productSales.put(
+                            product.getId(),
+                            productSales.get(product.getId()) == null ? Integer.valueOf(productDetail.getSold())
+                                    : Integer.valueOf(productDetail.getSold()) + productSales.get(product.getId())));
         }
         productSales.entrySet()
-            .stream()
-            .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-            .limit(5)
-            .forEach(entry -> {
-                recommendedProducts.add(this.findProductById(entry.getKey()));
-            });
+                .stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .limit(5)
+                .forEach(entry -> {
+                    recommendedProducts.add(this.findProductById(entry.getKey()));
+                });
 
         return recommendedProducts;
     }
@@ -150,5 +156,24 @@ public class ProductService {
         ProductDetail detail = this.findProductDetailById(id);
         detail.setImageData(imageData);
         return this.productDetailRepository.save(detail);
+    }
+
+    private String deAccent(String text) {
+        text = text.replaceAll("à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ", "a");
+        text = text.replaceAll("è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ", "e");
+        text = text.replaceAll("ì|í|ị|ỉ|ĩ", "i");
+        text = text.replaceAll("ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ", "o");
+        text = text.replaceAll("ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ", "u");
+        text = text.replaceAll("ỳ|ý|ỵ|ỷ|ỹ", "y");
+        text = text.replaceAll("đ", "d");
+
+        text = text.replaceAll("À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ", "A");
+        text = text.replaceAll("È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ", "E");
+        text = text.replaceAll("Ì|Í|Ị|Ỉ|Ĩ", "I");
+        text = text.replaceAll("Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ", "O");
+        text = text.replaceAll("Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ", "U");
+        text = text.replaceAll("Ỳ|Ý|Ỵ|Ỷ|Ỹ", "Y");
+        text = text.replaceAll("Đ", "D");
+        return text;
     }
 }
