@@ -9,6 +9,7 @@ import ct553.backend.cart.control.CartDetailRepository;
 import ct553.backend.cart.control.CartRepository;
 import ct553.backend.cart.entity.Cart;
 import ct553.backend.cart.entity.CartDetail;
+import ct553.backend.product.boundary.ProductService;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -21,8 +22,8 @@ public class CartService {
     @Autowired
     CartDetailRepository cartDetailRepository;
 
-    // @Autowired
-    // private ProductService productService;
+    @Autowired
+    ProductService productService;
 
     // @Autowired
     // private CustomerService customerService;
