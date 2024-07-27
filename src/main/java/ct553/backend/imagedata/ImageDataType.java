@@ -5,7 +5,8 @@ public enum ImageDataType {
     PRODUCT(0),
     PRODUCT_DETAIL(1),
     AVATAR(2),
-    POST(3);
+    REVIEW(3),
+    POST(4);
 
     public final int type;
 

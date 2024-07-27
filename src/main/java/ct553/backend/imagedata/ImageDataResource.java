@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ImageDataResource {
 
     @Autowired
-    private ImageDataService imageDataService;
+    ImageDataService imageDataService;
 
     @GetMapping
     public ResponseEntity<?> getAllImageData() {
