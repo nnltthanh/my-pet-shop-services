@@ -9,7 +9,7 @@ public enum ImageDataType {
 
     public final int type;
 
-    private ImageDataType(int type) {
+    ImageDataType(int type) {
         this.type = type;
     }
 

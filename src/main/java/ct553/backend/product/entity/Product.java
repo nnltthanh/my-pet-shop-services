@@ -3,6 +3,7 @@ package ct553.backend.product.entity;
 import java.util.Date;
 
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -11,15 +12,22 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import ct553.backend.imagedata.ImageData;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,11 +40,14 @@ import lombok.NoArgsConstructor;
 @Table(name = "product")
 @AllArgsConstructor
 @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "product_type", discriminatorType = DiscriminatorType.STRING)
+@EntityListeners(AuditingEntityListener.class)
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "product_id")
     private Long id;
 
     @Column(nullable = false)
@@ -58,5 +69,10 @@ public class Product {
     @UpdateTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date updatedAt;
+
+    @Transient
+    public String getProductType() {
+        return this.getClass().getAnnotation(DiscriminatorValue.class).value();
+    }
 
 }
