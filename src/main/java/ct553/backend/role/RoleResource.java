@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/roles")
-public class RoleController {
+public class RoleResource {
 
     @Autowired
     RoleService roleService;

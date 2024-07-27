@@ -1,12 +1,9 @@
-package ct553.backend.order.entity;
-
-import java.math.BigDecimal;
+package ct553.backend.address;
 
 import org.springframework.stereotype.Component;
 
-import ct553.backend.product.entity.ProductDetail;
+import ct553.backend.customer.Customer;
 import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,29 +18,38 @@ import lombok.NoArgsConstructor;
 @Component
 @Entity
 @Data
-@Table(name = "order_detail")
+@Table(name = "address")
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDetail {
+public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
     private Long id;
 
+    @Column(columnDefinition = "TEXT")
+    private String belongsTo; // user's name
+
     @Column
-    private int quantity;
+    private String phone;
 
-    @Column(precision = 10, scale = 2)
-    private BigDecimal total;
+    @Column(columnDefinition = "TEXT")
+    private String address;
+
+    @Column
+    private String cityId;
+
+    @Column
+    private String districtId;
+
+    @Column
+    private String wardId;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
-    // @JsonIgnore
-    private Order order;
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
-    @ManyToOne
-    @JoinColumn(name = "product_detail_id", foreignKey = @jakarta.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-    private ProductDetail productDetail;
+    @Column
+    private Boolean isDefault = false;
 
 }

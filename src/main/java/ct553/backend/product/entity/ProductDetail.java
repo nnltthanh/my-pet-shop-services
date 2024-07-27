@@ -1,5 +1,7 @@
 package ct553.backend.product.entity;
 
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Component;
 
 import ct553.backend.imagedata.ImageData;
@@ -30,6 +32,9 @@ public class ProductDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Long id;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal price;
 
     private String unit;
 

@@ -50,12 +50,4 @@ public class Role {
                     name = "privilege_id", referencedColumnName = "id"))
     private Collection<Privilege> privileges;
 
-    public Role(String name) {
-        this.name = name;
-    }
-
-    public Role(Role role) {
-        this.id = role.getId();
-        this.name = role.getName();
-    }
 }

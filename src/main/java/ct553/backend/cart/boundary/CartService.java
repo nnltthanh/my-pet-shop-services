@@ -1,5 +1,6 @@
 package ct553.backend.cart.boundary;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,9 @@ import ct553.backend.cart.control.CartDetailRepository;
 import ct553.backend.cart.control.CartRepository;
 import ct553.backend.cart.entity.Cart;
 import ct553.backend.cart.entity.CartDetail;
+import ct553.backend.customer.CustomerService;
 import ct553.backend.product.boundary.ProductService;
+import ct553.backend.product.entity.ProductDetail;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -25,51 +28,51 @@ public class CartService {
     @Autowired
     ProductService productService;
 
-    // @Autowired
-    // private CustomerService customerService;
+    @Autowired
+    CustomerService customerService;
 
-    // public CartDetail addProductDetailToCart(Long customerId, CartDetail cartDetail) {
+    public CartDetail addProductDetailToCart(Long customerId, CartDetail cartDetail) {
         
-    //     Long productDetailId = cartDetail.getProductDetail().getId();
+        Long productDetailId = cartDetail.getProductDetail().getId();
 
-    //     Cart cart = this.findCartByCustomerId(customerId);
+        Cart cart = this.findCartByCustomerId(customerId);
 
-    //     ProductDetail productDetail = this.productService.findProductDetailById(productDetailId);
+        ProductDetail productDetail = this.productService.findProductDetailById(productDetailId);
 
-    //     // handle for exist cart detail
-    //     CartDetail cartDetailDB = this.cartDetailRepository.findByProductDetailId(productDetailId).orElse(null);
+        // handle for exist cart detail
+        CartDetail cartDetailDB = this.cartDetailRepository.findByProductDetailId(productDetailId).orElse(null);
 
-    //     int newQuantity = cartDetail.getQuantity();
+        int newQuantity = cartDetail.getQuantity();
 
-    //     if (cartDetailDB != null) {
-    //         newQuantity += cartDetailDB.getQuantity();
-    //     }
+        if (cartDetailDB != null) {
+            newQuantity += cartDetailDB.getQuantity();
+        }
 
-    //     int remainingQuantity = productDetail.getQuantity() - newQuantity;
+        int remainingQuantity = productDetail.getQuantity() - newQuantity;
 
-    //     if (remainingQuantity >= 0) {
-    //         cartDetail.setQuantity(newQuantity);
-    //         if (cartDetailDB != null) { // make cart detail push on top when add to cart
-    //             this.cartDetailRepository.delete(cartDetailDB);
-    //         }
+        if (remainingQuantity >= 0) {
+            cartDetail.setQuantity(newQuantity);
+            if (cartDetailDB != null) { // make cart detail push on top when add to cart
+                this.cartDetailRepository.delete(cartDetailDB);
+            }
 
-    //         this.productService.addProductDetail(productDetail.getProduct().getId(), productDetail);
+            this.productService.addProductDetail(productDetail.getProduct().getId(), productDetail);
 
-    //         BigDecimal total = BigDecimal.valueOf(cartDetail.getQuantity())
-    //                 .multiply(productDetail.getProduct().getPrice());
+            BigDecimal total = BigDecimal.valueOf(cartDetail.getQuantity())
+                    .multiply(productDetail.getPrice());
 
-    //         cartDetail.setProductDetail(productDetail);
-    //         cartDetail.setTotal(total);
+            cartDetail.setProductDetail(productDetail);
+            cartDetail.setTotal(total);
 
-    //         cart.addCartDetail(cartDetail);
+            cart.addCartDetail(cartDetail);
 
-    //         this.cartRepository.save(cart);
+            this.cartRepository.save(cart);
 
-    //         return this.cartDetailRepository.save(cartDetail);
-    //     }
+            return this.cartDetailRepository.save(cartDetail);
+        }
 
-    //     return null;
-    // }
+        return null;
+    }
 
     ArrayList<CartDetail> getAllCartDetails(Long customerId) {
         Cart cart = this.findCartByCustomerId(customerId);
@@ -79,10 +82,10 @@ public class CartService {
     private Cart findCartByCustomerId(Long customerId) {
         Cart cart = this.cartRepository.findByCustomer_Id(customerId).orElse(new Cart());
 
-        // if (cart.getCustomer() == null) {
-        //     cart.setCustomer(this.customerService.findById(customerId));
-        //     this.cartRepository.saveAndFlush(cart);
-        // }
+        if (cart.getCustomer() == null) {
+            cart.setCustomer(this.customerService.findById(customerId));
+            this.cartRepository.saveAndFlush(cart);
+        }
         
         return cart;
     }
@@ -99,7 +102,7 @@ public class CartService {
         CartDetail cartDetailDB = this.cartDetailRepository.findById(cartDetail.getId()).get();
         
         cartDetailDB.setQuantity(cartDetail.getQuantity());
-        // cartDetailDB.setProductDetail(cartDetail.getProductDetail());
+        cartDetailDB.setProductDetail(cartDetail.getProductDetail());
         cartDetailDB.setTotal(cartDetail.getTotal());
 
         return this.cartDetailRepository.saveAndFlush(cartDetailDB);

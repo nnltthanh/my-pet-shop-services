@@ -18,12 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import ct553.backend.CloudinaryService;
+import ct553.backend.imagedata.ImageData;
+import ct553.backend.imagedata.ImageDataType;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-public class UserController {
+public class UserResource {
 
     @Autowired
     UserService userService;
@@ -100,9 +102,12 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAvatar(@PathVariable Long id, @RequestParam("image") MultipartFile avatar) throws IOException {
-        String imageURL = cloudinaryService.uploadFile(avatar);
-        User user = this.userService.updateAvatar(id, imageURL);
+    public ResponseEntity<?> updateAvatar(@PathVariable Long id, @RequestParam("image") MultipartFile image) throws IOException {
+        String imageURL = cloudinaryService.uploadFile(image);
+        ImageData avatar = new ImageData();
+        avatar.setPath(imageURL);
+        avatar.setType(ImageDataType.AVATAR);
+        User user = this.userService.updateAvatar(id, avatar);
 
         if (user != null)
             return new ResponseEntity<>(user, HttpStatus.OK);

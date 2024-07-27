@@ -1,6 +1,5 @@
 package ct553.backend.user;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +9,9 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import ct553.backend.imagedata.ImageData;
 import ct553.backend.role.Role;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
@@ -26,6 +27,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -39,11 +41,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @EntityListeners(AuditingEntityListener.class)
-public class User implements Serializable {
+public class User {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,26 +60,15 @@ public class User implements Serializable {
         @Column
         private String name;
 
-        @Column(columnDefinition = "TEXT")
-        private String address;
-
-        @Column(columnDefinition = "TEXT")
-        private String province;
-
-        @Column(columnDefinition = "TEXT")
-        private String district;
-
-        @Column(columnDefinition = "TEXT")
-        private String ward;
-
         @Column(length = 12)
         private String phone;
 
         @Column(length = 80)
         private String email;
 
-        @Column(columnDefinition = "TEXT")
-        private String avatar;
+        @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+        @JoinColumn(name = "avatar")
+        private ImageData avatar;
 
         @Temporal(value = TemporalType.DATE)
         @JsonFormat(pattern = "yyyy-MM-dd")
@@ -88,6 +79,10 @@ public class User implements Serializable {
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
         @CreatedDate
         private Date createdAt;
+
+        @Column(name = "updated_at")
+        @Temporal(value = TemporalType.TIMESTAMP)
+        private Date updatedAt;
 
         @ManyToMany(fetch = FetchType.EAGER)
         @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))

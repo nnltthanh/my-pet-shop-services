@@ -20,7 +20,6 @@ public class UserDTO {
     private String phone;
     private String email;
     private String userType;
-    private String address;
     private Date dob;
     private Boolean locked;
     private List<RoleDTO> roles;
@@ -34,7 +33,6 @@ public class UserDTO {
         this.email = user.getEmail();
         this.userType = user.getUserType();
         this.dob = user.getDob();
-        this.address = user.getAddress();
         this.locked = user.isLocked();
         this.roles = user.getRoles().stream().map(RoleDTO::new).collect(Collectors.toList());
     }

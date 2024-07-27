@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import ct553.backend.customer.Customer;
 import ct553.backend.order.OrderStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,6 +19,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -68,10 +71,10 @@ public class Order {
     // @JoinColumn(name = "warehouse_id")
     // private Warehouse warehouse;
 
-    // @ManyToOne
-    // @JoinColumn(name = "customer_id")
-    // // @JsonIgnore
-    // private Customer customer;
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    // @JsonIgnore
+    private Customer customer;
 
     @Column(columnDefinition = "TEXT")
     private String note;

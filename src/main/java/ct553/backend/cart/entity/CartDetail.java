@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import ct553.backend.product.entity.ProductDetail;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -42,8 +43,8 @@ public class CartDetail {
     @JsonIgnore
     private Cart cart;
 
-    // @ManyToOne
-    // @JoinColumn(name = "product_detail_id")
-    // private ProductDetail productDetail;
+    @ManyToOne
+    @JoinColumn(name = "product_detail_id")
+    private ProductDetail productDetail;
 
 }

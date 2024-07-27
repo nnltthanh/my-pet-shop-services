@@ -2,8 +2,6 @@ package ct553.backend.role;
 
 import java.util.List;
 
-import org.hibernate.Hibernate;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +11,6 @@ public class RoleService {
     @Autowired
     private RoleRepository roleRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
 
     public List<RoleDTO> findAll() {
         List<Role> roles = this.roleRepository.findAll();
@@ -22,12 +18,12 @@ public class RoleService {
     }
 
     public RoleDTO findById(Long id) {
-        Role role = roleRepository.findById(id).orElse(null);
+        // Role role = roleRepository.findById(id).orElse(null);
         // .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-        if (role != null) {
-            Hibernate.initialize(role.getPrivileges()); // Eagerly fetch roles
-            return modelMapper.map(role, RoleDTO.class);
-        }
+        // if (role != null) { // TODO
+        //     Hibernate.initialize(role.getPrivileges()); // Eagerly fetch roles
+        //     return modelMapper.map(role, RoleDTO.class);
+        // }
         return null;
     }
 

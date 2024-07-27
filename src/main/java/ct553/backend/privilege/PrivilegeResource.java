@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/privileges")
-public class PrivilegeController {
+public class PrivilegeResource {
 
     @Autowired
     PrivilegeService privilegeService;
@@ -20,14 +20,6 @@ public class PrivilegeController {
     }
 
     @GetMapping("/{id}")
-//    public ResponseEntity<?> getPrivilegeById(@PathVariable Long id) {
-//        Privilege privilege = this.privilegeService.findById(id);
-//        if (privilege == null) {
-//            return new ResponseEntity<>("This privilege is not exist", HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<>(privilege, HttpStatus.FOUND);
-//    }
-
     public ResponseEntity<?> getPrivilegeById(@PathVariable Long id) {
         PrivilegeDTO privilegeDTO = privilegeService.findById(id);
         if (privilegeDTO == null) {

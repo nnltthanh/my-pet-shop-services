@@ -2,11 +2,10 @@ package ct553.backend.user;
 
 import java.util.List;
 
-import org.hibernate.Hibernate;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ct553.backend.imagedata.ImageData;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -14,10 +13,10 @@ import jakarta.transaction.Transactional;
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    // @Autowired
+    // ModelMapper modelMapper;
 
     public List<UserDTO> findAll() {
         List<User> users = this.userRepository.findAll();
@@ -25,12 +24,12 @@ public class UserService {
     }
 
     public UserDTO findById(Long id) {
-        User user = userRepository.findById(id).orElse(null);
+        // User user = userRepository.findById(id).orElse(null);
 
-        if (user != null) {
-            Hibernate.initialize(user.getRoles()); // Eagerly fetch roles
-            return modelMapper.map(user, UserDTO.class);
-        }
+        // if (user != null) {
+        //     Hibernate.initialize(user.getRoles()); // Eagerly fetch roles
+        //     return modelMapper.map(user, UserDTO.class);
+        // }
         return null;
     }
 
@@ -59,7 +58,7 @@ public class UserService {
         return null;
     }
 
-    public User updateAvatar(Long id, String avatar) {
+    public User updateAvatar(Long id, ImageData avatar) {
         User existUser = this.userRepository.findById(id).orElse(null);
         if (existUser != null) {
             existUser.setAvatar(avatar);
