@@ -3,10 +3,12 @@ package ct553.backend.pet.boundary;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import ct553.backend.pet.control.PetCategoryRepository;
 import ct553.backend.pet.entity.PetCategory;
 
+@Service
 public class PetCategoryService {
 
     @Autowired

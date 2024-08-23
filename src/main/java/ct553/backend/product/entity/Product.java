@@ -1,5 +1,6 @@
 package ct553.backend.product.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.hibernate.annotations.UpdateTimestamp;
@@ -56,6 +57,9 @@ public class Product {
 
     @Column
     private String engName;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal price;
 
     @Column(columnDefinition = "TEXT")
     private String description;

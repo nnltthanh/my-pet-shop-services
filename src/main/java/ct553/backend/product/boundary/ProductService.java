@@ -10,6 +10,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import ct553.backend.imagedata.ImageData;
@@ -17,6 +21,7 @@ import ct553.backend.product.control.ProductDetailRepository;
 import ct553.backend.product.control.ProductRepository;
 import ct553.backend.product.entity.Product;
 import ct553.backend.product.entity.ProductDetail;
+import ct553.backend.product.entity.ProductSortingCriteria;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -34,8 +39,15 @@ public class ProductService {
         this.productRepository.save(product);
     }
 
-    ArrayList<Product> getAllProducts() {
-        return (ArrayList<Product>) this.productRepository.findAll();
+    public ArrayList<Product> findAllBy(ProductSortingCriteria sortingCriteria, Pageable pageable) {
+
+        return new ArrayList<>(productRepository.findAll(
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)))
+                .stream().toList());
+    }
+
+    public ArrayList<Product> findAllBy() {
+        return new ArrayList<>(productRepository.findAll());
     }
 
     public Product findProductById(Long id) {
@@ -125,7 +137,7 @@ public class ProductService {
     }
 
     public ArrayList<Product> findTop5MostSale() {
-        ArrayList<Product> filteredProducts = this.getAllProducts();
+        ArrayList<Product> filteredProducts = this.findAllBy();
         ArrayList<Product> recommendedProducts = new ArrayList<>();
         Map<Long, Integer> productSales = new HashMap<Long, Integer>();
 
@@ -156,6 +168,24 @@ public class ProductService {
         ProductDetail detail = this.findProductDetailById(id);
         detail.setImageData(imageData);
         return this.productDetailRepository.save(detail);
+    }
+
+    private Sort buildSortCriteria(ProductSortingCriteria sortingCriteria) {
+        if (Objects.isNull(sortingCriteria) || sortingCriteria.isEmptySearchCriteria()) {
+            return Sort.by(Direction.DESC, "updatedAt");
+        }
+        if (sortingCriteria.getUpdatedAt() != null) {
+            return Sort.by(Sort.Order.by("updatedAt").with(sortingCriteria.getUpdatedAt()));
+        }
+
+        if (sortingCriteria.getPrice() != null) {
+            return Sort.by(Sort.Order.by("price").with(sortingCriteria.getPrice()));
+        }
+
+        if (sortingCriteria.getPrice() != null) {
+            return Sort.by(Sort.Order.by("rating").with(sortingCriteria.getRating()));
+        }
+        return Sort.unsorted();
     }
 
     private String deAccent(String text) {

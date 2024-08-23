@@ -13,44 +13,44 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ct553.backend.pet.entity.Pet;
+import ct553.backend.pet.entity.PetCategory;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/pets")
-public class PetResource {
+@RequestMapping("/pet-categories")
+public class PetCategoryResource {
     
     @Autowired
-    PetService petService;
+    PetCategoryService petCategoryService;
 
     @GetMapping
-    public ArrayList<Pet> getAllPets() {
-        return this.petService.findAll();
+    public ArrayList<PetCategory> getAll() {
+        return this.petCategoryService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPetById(@PathVariable Long id) {
-        Pet Pet = petService.findById(id);
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        PetCategory Pet = petCategoryService.findById(id);
         if (Pet == null) {
-            return new ResponseEntity<>("This Pet is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("This pet category is not exist", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(Pet, HttpStatus.FOUND);
     }
 
     @PostMapping
-    public ResponseEntity<?> add(@Valid @RequestBody Pet Pet) {
-        this.petService.add(Pet);
+    public ResponseEntity<?> add(@Valid @RequestBody PetCategory Pet) {
+        this.petCategoryService.add(Pet);
         return new ResponseEntity<>(Pet, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable Long id) {
-        Pet Pet = petService.findById(id);
+        PetCategory Pet = petCategoryService.findById(id);
         if (Pet == null) {
-            return new ResponseEntity<>("This pet is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("This pet category is not exist", HttpStatus.NOT_FOUND);
         }
-        this.petService.deleteById(id);
-        return new ResponseEntity<>("A pet with id =" + id + " is deleted successfully", HttpStatus.OK);
+        this.petCategoryService.deleteById(id);
+        return new ResponseEntity<>("A pet category with id =" + id + " is deleted successfully", HttpStatus.OK);
     }
 
 }

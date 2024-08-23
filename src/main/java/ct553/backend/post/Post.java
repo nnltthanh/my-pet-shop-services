@@ -46,7 +46,7 @@ public class Post {
     @Column(name = "author")
     private String author;
 
-    @Column(name = "content", columnDefinition = "LONGTEXT")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
