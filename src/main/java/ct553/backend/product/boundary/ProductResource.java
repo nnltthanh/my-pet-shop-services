@@ -1,18 +1,18 @@
 package ct553.backend.product.boundary;
 
-import java.util.ArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import ct553.backend.CloudinaryService;
 import ct553.backend.imagedata.ImageDataService;
-import ct553.backend.product.entity.Product;
+import ct553.backend.product.entity.ProductOverviewResponse;
 import ct553.backend.product.entity.ProductSortingCriteria;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,14 +32,16 @@ public class ProductResource {
     ImageDataService imageDataService;
 
     @GetMapping({ "/", "" })
-    public ArrayList<Product> getAllProducts(
+    @ResponseStatus(value = HttpStatus.OK)
+    public ProductOverviewResponse getAllProducts(
             @RequestParam(value = "updatedAt", required = false) Sort.Direction updatedAtOrder,
             @RequestParam(value = "rating", required = false) Sort.Direction ratingOrder,
             @RequestParam(value = "price", required = false) Sort.Direction priceOrder,
             @RequestParam(value = "page", required = false, defaultValue = "0") int numberOfPage,
-            @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize) {
-        log.info("{} {} {} {} {}", updatedAtOrder, ratingOrder, priceOrder, numberOfPage, pageSize);
-        return this.productService.findAllBy(new ProductSortingCriteria(updatedAtOrder, ratingOrder, priceOrder),
+            @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize) 
+    {
+        return this.productService.findProductOverviewResponseBy(
+                new ProductSortingCriteria(updatedAtOrder, ratingOrder, priceOrder),
                 PageRequest.of(numberOfPage, pageSize));
     }
 

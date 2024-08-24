@@ -21,6 +21,7 @@ import ct553.backend.product.control.ProductDetailRepository;
 import ct553.backend.product.control.ProductRepository;
 import ct553.backend.product.entity.Product;
 import ct553.backend.product.entity.ProductDetail;
+import ct553.backend.product.entity.ProductOverviewResponse;
 import ct553.backend.product.entity.ProductSortingCriteria;
 import jakarta.transaction.Transactional;
 
@@ -40,10 +41,17 @@ public class ProductService {
     }
 
     public ArrayList<Product> findAllBy(ProductSortingCriteria sortingCriteria, Pageable pageable) {
-
         return new ArrayList<>(productRepository.findAll(
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)))
                 .stream().toList());
+    }
+
+    public ProductOverviewResponse findProductOverviewResponseBy(ProductSortingCriteria sortingCriteria, Pageable pageable) {
+        List<Product> data = new ArrayList<>(productRepository.findAll(
+            PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)))
+            .stream().toList());
+        Long total = productRepository.count();
+        return new ProductOverviewResponse(total, data);
     }
 
     public ArrayList<Product> findAllBy() {
