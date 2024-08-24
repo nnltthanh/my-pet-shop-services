@@ -21,8 +21,10 @@ import ct553.backend.pet.entity.PetCategory;
 import ct553.backend.product.control.PetProductRepository;
 import ct553.backend.product.entity.PetProduct;
 import ct553.backend.product.entity.ProductSortingCriteria;
+import jakarta.transaction.Transactional;
 
 @Service
+@Transactional
 public class PetProductService {
 
     @Autowired
@@ -70,7 +72,7 @@ public class PetProductService {
     }
 
     private Sort buildSortCriteria(ProductSortingCriteria sortingCriteria) {
-        if (Objects.isNull(sortingCriteria) || sortingCriteria.isEmptySearchCriteria()) {
+        if (Objects.isNull(sortingCriteria) || sortingCriteria.isEmptySortingCriteria()) {
             return Sort.by(Direction.DESC, "updatedAt");
         }
         if (sortingCriteria.getUpdatedAt() != null) {

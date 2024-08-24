@@ -44,6 +44,9 @@ public class PetProduct extends Product {
     private Gender gender;
 
     @Column
+    private String color;
+
+    @Column
     private String origin;
 
     @Column

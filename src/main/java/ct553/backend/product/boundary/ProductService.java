@@ -22,6 +22,7 @@ import ct553.backend.product.control.ProductRepository;
 import ct553.backend.product.entity.Product;
 import ct553.backend.product.entity.ProductDetail;
 import ct553.backend.product.entity.ProductOverviewResponse;
+import ct553.backend.product.entity.ProductSearchingCriteria;
 import ct553.backend.product.entity.ProductSortingCriteria;
 import jakarta.transaction.Transactional;
 
@@ -46,11 +47,13 @@ public class ProductService {
                 .stream().toList());
     }
 
-    public ProductOverviewResponse findProductOverviewResponseBy(ProductSortingCriteria sortingCriteria, Pageable pageable) {
-        List<Product> data = new ArrayList<>(productRepository.findAll(
-            PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)))
-            .stream().toList());
-        Long total = productRepository.count();
+    public ProductOverviewResponse findProductOverviewResponseBy(ProductSortingCriteria sortingCriteria,
+            ProductSearchingCriteria searchingCriteria, Pageable pageable) {
+        List<Product> data = new ArrayList<>(productRepository.findAllByPriceBetween(
+                searchingCriteria.getPriceFrom(), searchingCriteria.getPriceTo(),
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)))
+                .stream().toList());
+        Long total = this.productRepository.countAllByPriceBetween(searchingCriteria.getPriceFrom(), searchingCriteria.getPriceTo());
         return new ProductOverviewResponse(total, data);
     }
 
@@ -179,7 +182,7 @@ public class ProductService {
     }
 
     private Sort buildSortCriteria(ProductSortingCriteria sortingCriteria) {
-        if (Objects.isNull(sortingCriteria) || sortingCriteria.isEmptySearchCriteria()) {
+        if (Objects.isNull(sortingCriteria) || sortingCriteria.isEmptySortingCriteria()) {
             return Sort.by(Direction.DESC, "updatedAt");
         }
         if (sortingCriteria.getUpdatedAt() != null) {

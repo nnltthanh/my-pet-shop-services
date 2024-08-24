@@ -1,5 +1,7 @@
 package ct553.backend.product.boundary;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ct553.backend.CloudinaryService;
 import ct553.backend.imagedata.ImageDataService;
 import ct553.backend.product.entity.ProductOverviewResponse;
+import ct553.backend.product.entity.ProductSearchingCriteria;
 import ct553.backend.product.entity.ProductSortingCriteria;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,11 +40,14 @@ public class ProductResource {
             @RequestParam(value = "updatedAt", required = false) Sort.Direction updatedAtOrder,
             @RequestParam(value = "rating", required = false) Sort.Direction ratingOrder,
             @RequestParam(value = "price", required = false) Sort.Direction priceOrder,
+            @RequestParam(value = "priceFrom", required = false, defaultValue = "0") BigDecimal priceFrom,
+            @RequestParam(value = "priceTo", required = false, defaultValue = "10000000000") BigDecimal priceTo,
             @RequestParam(value = "page", required = false, defaultValue = "0") int numberOfPage,
             @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize) 
     {
         return this.productService.findProductOverviewResponseBy(
                 new ProductSortingCriteria(updatedAtOrder, ratingOrder, priceOrder),
+                new ProductSearchingCriteria(priceFrom, priceTo),
                 PageRequest.of(numberOfPage, pageSize));
     }
 
