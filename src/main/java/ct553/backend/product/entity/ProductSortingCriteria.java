@@ -10,15 +10,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductSortingCriteria {
-    
+
     private Sort.Direction updatedAt;
+
+    private Sort.Direction alphabet;
 
     private Sort.Direction rating;
 
     private Sort.Direction price;
 
     public boolean isEmptySortingCriteria() {
-        return this.updatedAt == null && this.rating == null && this.price == null;
+        return this.updatedAt == null && this.alphabet == null && this.rating == null && this.price == null;
     }
-    
+
 }

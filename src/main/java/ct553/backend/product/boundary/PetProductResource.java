@@ -1,11 +1,8 @@
 package ct553.backend.product.boundary;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import ct553.backend.product.entity.PetProduct;
-import ct553.backend.product.entity.ProductSortingCriteria;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,19 +23,23 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/products/pets")
 @Slf4j
 public class PetProductResource {
-    
+
     @Autowired
     PetProductService petService;
 
-    @GetMapping({"/", ""})
-    public ArrayList<PetProduct> getAllPets(
-                                @RequestParam(value = "updatedAt", required = false) Sort.Direction updatedAtOrder,
-                                @RequestParam(value = "rating", required = false) Sort.Direction ratingOrder,
-                                @RequestParam(value = "price", required = false) Sort.Direction priceOrder,
-                                @RequestParam(value = "page", required = false, defaultValue = "0") int numberOfPage,
-                                @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize) {
-        return this.petService.findAllBy(new ProductSortingCriteria(updatedAtOrder, ratingOrder, priceOrder), PageRequest.of(numberOfPage, pageSize));
-    }
+    // @GetMapping({ "/", "" })
+    // public ArrayList<PetProduct> getAllPetsBy(
+    //         @RequestParam(value = "updatedAt", required = false) Sort.Direction updatedAtOrder,
+    //         @RequestParam(value = "alphabet", required = false) Sort.Direction alphabetOrder,
+    //         @RequestParam(value = "rating", required = false) Sort.Direction ratingOrder,
+    //         @RequestParam(value = "price", required = false) Sort.Direction priceOrder,
+    //         @RequestParam(value = "page", required = false, defaultValue = "0") int numberOfPage,
+    //         @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize,
+    //         @RequestParam(value = "breeds", required = false, defaultValue = "DOG,CAT,HAMSTER") List<PetBreed> breeds) {
+    //     return this.petService.findAllBy(breeds,
+    //             new ProductSortingCriteria(updatedAtOrder, alphabetOrder, ratingOrder, priceOrder),
+    //             PageRequest.of(numberOfPage, pageSize));
+    // }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getPetById(@PathVariable Long id) {
@@ -52,7 +51,8 @@ public class PetProductResource {
     }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<PetProduct> add(@Valid @RequestPart(value = "petProduct") PetProduct petProduct, @RequestPart(value = "image", required = false) MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<PetProduct> add(@Valid @RequestPart(value = "petProduct") PetProduct petProduct,
+            @RequestPart(value = "image", required = false) MultipartFile multipartFile) throws IOException {
         return new ResponseEntity<>(this.petService.add(petProduct, multipartFile), HttpStatus.CREATED);
     }
 

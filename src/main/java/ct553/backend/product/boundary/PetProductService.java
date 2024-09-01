@@ -20,6 +20,7 @@ import ct553.backend.pet.boundary.PetCategoryService;
 import ct553.backend.pet.entity.PetCategory;
 import ct553.backend.product.control.PetProductRepository;
 import ct553.backend.product.entity.PetProduct;
+import ct553.backend.product.entity.ProductSearchingCriteria;
 import ct553.backend.product.entity.ProductSortingCriteria;
 import jakarta.transaction.Transactional;
 
@@ -36,17 +37,24 @@ public class PetProductService {
     @Autowired
     private CloudinaryServiceImp cloudinaryService;
 
-    public ArrayList<PetProduct> findAllBy(ProductSortingCriteria sortingCriteria, Pageable pageable) {
-
+    public ArrayList<PetProduct> findAllBy(ProductSortingCriteria sortingCriteria,
+            ProductSearchingCriteria searchingCriteria, Pageable pageable) {
         return new ArrayList<>(
                 petRepository
-                        .findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-                                buildSortCriteria(sortingCriteria)))
+                        .findAllByPriceBetweenAndCategoryBreedIn(searchingCriteria.getPriceFrom(),
+                                searchingCriteria.getPriceTo(), searchingCriteria.getBreeds(),
+                                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                                        buildSortCriteria(sortingCriteria)))
                         .stream().map(pet -> {
                             this.mapPetCategory(pet);
                             return pet;
                         })
                         .toList());
+    }
+
+    public Long countAllBy(ProductSortingCriteria sortingCriteria, ProductSearchingCriteria searchingCriteria) {
+        return this.petRepository.countAllByPriceBetweenAndCategoryBreedIn(searchingCriteria.getPriceFrom(),
+                searchingCriteria.getPriceTo(), searchingCriteria.getBreeds());
     }
 
     public PetProduct findById(Long id) {
@@ -78,11 +86,12 @@ public class PetProductService {
         if (sortingCriteria.getUpdatedAt() != null) {
             return Sort.by(Sort.Order.by("updatedAt").with(sortingCriteria.getUpdatedAt()));
         }
-
+        if (sortingCriteria.getAlphabet() != null) {
+            return Sort.by(Sort.Order.by("engName").with(sortingCriteria.getAlphabet()));
+        }
         if (sortingCriteria.getPrice() != null) {
             return Sort.by(Sort.Order.by("price").with(sortingCriteria.getPrice()));
         }
-
         if (sortingCriteria.getPrice() != null) {
             return Sort.by(Sort.Order.by("rating").with(sortingCriteria.getRating()));
         }

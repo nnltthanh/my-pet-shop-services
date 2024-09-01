@@ -31,6 +31,7 @@ import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -38,6 +39,7 @@ import lombok.NoArgsConstructor;
 @Validated
 @Entity
 @Data
+@Builder
 @Table(name = "product")
 @AllArgsConstructor
 @NoArgsConstructor

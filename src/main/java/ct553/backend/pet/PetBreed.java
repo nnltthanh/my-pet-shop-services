@@ -7,8 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public enum PetBreed {
 
+public enum PetBreed {
     DOG("Dog"),
     CAT("Cat"),
     HAMSTER("Hamster");

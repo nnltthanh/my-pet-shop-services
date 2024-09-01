@@ -2,10 +2,7 @@ package ct553.backend.product.boundary;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -19,6 +16,7 @@ import org.springframework.stereotype.Service;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.product.control.ProductDetailRepository;
 import ct553.backend.product.control.ProductRepository;
+import ct553.backend.product.entity.PetProduct;
 import ct553.backend.product.entity.Product;
 import ct553.backend.product.entity.ProductDetail;
 import ct553.backend.product.entity.ProductOverviewResponse;
@@ -31,6 +29,9 @@ import jakarta.transaction.Transactional;
 public class ProductService {
 
     @Autowired
+    private PetProductService petProductService;
+
+    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
@@ -41,25 +42,26 @@ public class ProductService {
         this.productRepository.save(product);
     }
 
-    public ArrayList<Product> findAllBy(ProductSortingCriteria sortingCriteria, Pageable pageable) {
-        return new ArrayList<>(productRepository.findAll(
-                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)))
-                .stream().toList());
-    }
-
     public ProductOverviewResponse findProductOverviewResponseBy(ProductSortingCriteria sortingCriteria,
             ProductSearchingCriteria searchingCriteria, Pageable pageable) {
+        if (searchingCriteria.hasBreeds()) {
+            return this.findProductOverviewResponseFromPetProduct(sortingCriteria, searchingCriteria, pageable);
+        }
         List<Product> data = new ArrayList<>(productRepository.findAllByPriceBetween(
                 searchingCriteria.getPriceFrom(), searchingCriteria.getPriceTo(),
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)))
                 .stream().toList());
         Long total = this.productRepository.countAllByPriceBetween(searchingCriteria.getPriceFrom(), searchingCriteria.getPriceTo());
-        return new ProductOverviewResponse(total, data);
+        return ProductOverviewResponse.fromProducts(total, data);
     }
 
-    public ArrayList<Product> findAllBy() {
-        return new ArrayList<>(productRepository.findAll());
+    private ProductOverviewResponse findProductOverviewResponseFromPetProduct(ProductSortingCriteria sortingCriteria,
+    ProductSearchingCriteria searchingCriteria, Pageable pageable) {
+        List<PetProduct> petProducts = this.petProductService.findAllBy(sortingCriteria, searchingCriteria, pageable);
+        Long total = this.petProductService.countAllBy(sortingCriteria, searchingCriteria);
+        return ProductOverviewResponse.fromPetProducts(total, petProducts);
     }
+
 
     public Product findProductById(Long id) {
         return this.productRepository.findById(id).orElse(null);
@@ -147,29 +149,29 @@ public class ProductService {
         return this.productDetailRepository.findById(id).orElse(null);
     }
 
-    public ArrayList<Product> findTop5MostSale() {
-        ArrayList<Product> filteredProducts = this.findAllBy();
-        ArrayList<Product> recommendedProducts = new ArrayList<>();
-        Map<Long, Integer> productSales = new HashMap<Long, Integer>();
+    // public ArrayList<Product> findTop5MostSale() {
+    //     ArrayList<Product> filteredProducts = this.findAllBy();
+    //     ArrayList<Product> recommendedProducts = new ArrayList<>();
+    //     Map<Long, Integer> productSales = new HashMap<Long, Integer>();
 
-        for (Product product : filteredProducts) {
-            this.getAllProductDetails(product.getId())
-                    .stream()
-                    .forEach(productDetail -> productSales.put(
-                            product.getId(),
-                            productSales.get(product.getId()) == null ? Integer.valueOf(productDetail.getSold())
-                                    : Integer.valueOf(productDetail.getSold()) + productSales.get(product.getId())));
-        }
-        productSales.entrySet()
-                .stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .limit(5)
-                .forEach(entry -> {
-                    recommendedProducts.add(this.findProductById(entry.getKey()));
-                });
+    //     for (Product product : filteredProducts) {
+    //         this.getAllProductDetails(product.getId())
+    //                 .stream()
+    //                 .forEach(productDetail -> productSales.put(
+    //                         product.getId(),
+    //                         productSales.get(product.getId()) == null ? Integer.valueOf(productDetail.getSold())
+    //                                 : Integer.valueOf(productDetail.getSold()) + productSales.get(product.getId())));
+    //     }
+    //     productSales.entrySet()
+    //             .stream()
+    //             .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+    //             .limit(5)
+    //             .forEach(entry -> {
+    //                 recommendedProducts.add(this.findProductById(entry.getKey()));
+    //             });
 
-        return recommendedProducts;
-    }
+    //     return recommendedProducts;
+    // }
 
     void deleteProductDetailById(Long id) {
         this.productDetailRepository.deleteById(id);
@@ -188,11 +190,12 @@ public class ProductService {
         if (sortingCriteria.getUpdatedAt() != null) {
             return Sort.by(Sort.Order.by("updatedAt").with(sortingCriteria.getUpdatedAt()));
         }
-
+        if (sortingCriteria.getAlphabet() != null) {
+            return Sort.by(Sort.Order.by("engName").with(sortingCriteria.getAlphabet()));
+        }
         if (sortingCriteria.getPrice() != null) {
             return Sort.by(Sort.Order.by("price").with(sortingCriteria.getPrice()));
         }
-
         if (sortingCriteria.getPrice() != null) {
             return Sort.by(Sort.Order.by("rating").with(sortingCriteria.getRating()));
         }
