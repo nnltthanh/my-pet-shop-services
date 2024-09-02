@@ -35,9 +35,9 @@ public class ProductResource {
     @Autowired
     ImageDataService imageDataService;
 
-    @GetMapping({ "/", "" })
+    @GetMapping({ "/search", "search" })
     @ResponseStatus(value = HttpStatus.OK)
-    public ProductOverviewResponse getAllProducts(
+    public ProductOverviewResponse findAllBy(
             @RequestParam(value = "updatedAt", required = false) Sort.Direction updatedAtOrder,
             @RequestParam(value = "alphabet", required = false) Sort.Direction alphabetOrder,
             @RequestParam(value = "rating", required = false) Sort.Direction ratingOrder,
@@ -46,9 +46,31 @@ public class ProductResource {
             @RequestParam(value = "priceTo", required = false, defaultValue = "10000000000") BigDecimal priceTo,
             @RequestParam(value = "page", required = false, defaultValue = "0") int numberOfPage,
             @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize,
-            @RequestParam(value = "breeds", required = false, defaultValue = "DOG,CAT,HAMSTER") List<PetBreed> breeds) {
+            @RequestParam(value = "breeds", required = false, defaultValue = "DOG,CAT,HAMSTER") List<PetBreed> breeds,
+            @RequestParam(value = "asc", required = false, defaultValue = "") List<String> ascValues,
+            @RequestParam(value = "desc", required = false, defaultValue = "") List<String> descValues) {
         return this.productService.findProductOverviewResponseBy(
-                new ProductSortingCriteria(updatedAtOrder, alphabetOrder, ratingOrder, priceOrder),
+                new ProductSortingCriteria(ascValues, descValues),
+                new ProductSearchingCriteria(priceFrom, priceTo, breeds),
+                PageRequest.of(numberOfPage, pageSize));
+    }
+
+    @GetMapping({ "/", "" })
+    @ResponseStatus(value = HttpStatus.OK)
+    public ProductOverviewResponse findAll(
+            @RequestParam(value = "updatedAt", required = false) Sort.Direction updatedAtOrder,
+            @RequestParam(value = "alphabet", required = false) Sort.Direction alphabetOrder,
+            @RequestParam(value = "rating", required = false) Sort.Direction ratingOrder,
+            @RequestParam(value = "price", required = false) Sort.Direction priceOrder,
+            @RequestParam(value = "priceFrom", required = false, defaultValue = "0") BigDecimal priceFrom,
+            @RequestParam(value = "priceTo", required = false, defaultValue = "10000000000") BigDecimal priceTo,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int numberOfPage,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "1000000000") int pageSize,
+            @RequestParam(value = "breeds", required = false, defaultValue = "DOG,CAT,HAMSTER") List<PetBreed> breeds,
+            @RequestParam(value = "asc", required = false, defaultValue = "") List<String> ascValues,
+            @RequestParam(value = "desc", required = false, defaultValue = "") List<String> descValues) {
+        return this.productService.findProductOverviewResponseBy(
+                new ProductSortingCriteria(ascValues, descValues),
                 new ProductSearchingCriteria(priceFrom, priceTo, breeds),
                 PageRequest.of(numberOfPage, pageSize));
     }

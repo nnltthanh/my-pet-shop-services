@@ -1,6 +1,8 @@
 package ct553.backend.product.entity;
 
-import org.springframework.data.domain.Sort;
+import java.util.List;
+
+import org.springframework.util.CollectionUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,16 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductSortingCriteria {
 
-    private Sort.Direction updatedAt;
+    private List<String> ascValues;
 
-    private Sort.Direction alphabet;
-
-    private Sort.Direction rating;
-
-    private Sort.Direction price;
+    private List<String> descValues;
 
     public boolean isEmptySortingCriteria() {
-        return this.updatedAt == null && this.alphabet == null && this.rating == null && this.price == null;
+        return CollectionUtils.isEmpty(ascValues) && CollectionUtils.isEmpty(descValues);
     }
 
 }

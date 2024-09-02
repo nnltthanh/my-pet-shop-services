@@ -2,6 +2,7 @@ package ct553.backend.product.boundary;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import ct553.backend.CloudinaryServiceImp;
@@ -20,6 +22,7 @@ import ct553.backend.pet.boundary.PetCategoryService;
 import ct553.backend.pet.entity.PetCategory;
 import ct553.backend.product.control.PetProductRepository;
 import ct553.backend.product.entity.PetProduct;
+import ct553.backend.product.entity.PetProductOverviewResponse;
 import ct553.backend.product.entity.ProductSearchingCriteria;
 import ct553.backend.product.entity.ProductSortingCriteria;
 import jakarta.transaction.Transactional;
@@ -36,6 +39,23 @@ public class PetProductService {
 
     @Autowired
     private CloudinaryServiceImp cloudinaryService;
+
+    public PetProductOverviewResponse findAllPetProductOverviewResponseBy(ProductSortingCriteria sortingCriteria,
+            ProductSearchingCriteria searchingCriteria, Pageable pageable) {
+        List<PetProduct> data = new ArrayList<>(
+                petRepository
+                        .findAllByPriceBetweenAndCategoryBreedIn(searchingCriteria.getPriceFrom(),
+                                searchingCriteria.getPriceTo(), searchingCriteria.getBreeds(),
+                                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                                        buildSortCriteria(sortingCriteria)))
+                        .stream().map(pet -> {
+                            this.mapPetCategory(pet);
+                            return pet;
+                        })
+                        .toList());
+        Long total = this.countAllBy(sortingCriteria, searchingCriteria);
+        return PetProductOverviewResponse.from(total, data);
+    }
 
     public ArrayList<PetProduct> findAllBy(ProductSortingCriteria sortingCriteria,
             ProductSearchingCriteria searchingCriteria, Pageable pageable) {
@@ -83,19 +103,13 @@ public class PetProductService {
         if (Objects.isNull(sortingCriteria) || sortingCriteria.isEmptySortingCriteria()) {
             return Sort.by(Direction.DESC, "updatedAt");
         }
-        if (sortingCriteria.getUpdatedAt() != null) {
-            return Sort.by(Sort.Order.by("updatedAt").with(sortingCriteria.getUpdatedAt()));
-        }
-        if (sortingCriteria.getAlphabet() != null) {
-            return Sort.by(Sort.Order.by("engName").with(sortingCriteria.getAlphabet()));
-        }
-        if (sortingCriteria.getPrice() != null) {
-            return Sort.by(Sort.Order.by("price").with(sortingCriteria.getPrice()));
-        }
-        if (sortingCriteria.getPrice() != null) {
-            return Sort.by(Sort.Order.by("rating").with(sortingCriteria.getRating()));
-        }
-        return Sort.unsorted();
+
+        List<Sort.Order> orders = new ArrayList<>();
+
+        sortingCriteria.getAscValues().stream().forEach(value -> orders.add(Sort.Order.by(value).with(Direction.ASC)));
+        sortingCriteria.getDescValues().stream().forEach(value -> orders.add(Sort.Order.by(value).with(Direction.DESC)));
+
+        return CollectionUtils.isEmpty(orders) ? Sort.unsorted() : Sort.by(orders);
     }
 
     private void mapPetCategory(PetProduct pet) {

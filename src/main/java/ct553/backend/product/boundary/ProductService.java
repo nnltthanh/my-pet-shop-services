@@ -187,18 +187,10 @@ public class ProductService {
         if (Objects.isNull(sortingCriteria) || sortingCriteria.isEmptySortingCriteria()) {
             return Sort.by(Direction.DESC, "updatedAt");
         }
-        if (sortingCriteria.getUpdatedAt() != null) {
-            return Sort.by(Sort.Order.by("updatedAt").with(sortingCriteria.getUpdatedAt()));
-        }
-        if (sortingCriteria.getAlphabet() != null) {
-            return Sort.by(Sort.Order.by("engName").with(sortingCriteria.getAlphabet()));
-        }
-        if (sortingCriteria.getPrice() != null) {
-            return Sort.by(Sort.Order.by("price").with(sortingCriteria.getPrice()));
-        }
-        if (sortingCriteria.getPrice() != null) {
-            return Sort.by(Sort.Order.by("rating").with(sortingCriteria.getRating()));
-        }
+        List<Sort.Order> orders = new ArrayList<>();
+
+        sortingCriteria.getAscValues().stream().forEach(value -> orders.add(Sort.Order.by(value).with(Direction.ASC)));
+        sortingCriteria.getDescValues().stream().forEach(value -> orders.add(Sort.Order.by(value).with(Direction.DESC)));
         return Sort.unsorted();
     }
 
