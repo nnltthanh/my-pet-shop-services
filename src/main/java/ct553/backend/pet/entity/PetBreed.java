@@ -1,4 +1,4 @@
-package ct553.backend.pet;
+package ct553.backend.pet.entity;
 
 import java.util.stream.Stream;
 
@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-
 public enum PetBreed {
     DOG("Dog"),
     CAT("Cat"),

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import ct553.backend.pet.PetBreed;
+import ct553.backend.pet.entity.PetBreed;
 import ct553.backend.product.entity.PetProduct;
 import ct553.backend.product.entity.PetProductOverviewResponse;
 import ct553.backend.product.entity.ProductSearchingCriteria;

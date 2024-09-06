@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.springframework.stereotype.Component;
 
+import ct553.backend.cart.entity.CartDetail;
 import ct553.backend.product.entity.ProductDetail;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
@@ -45,5 +46,12 @@ public class OrderDetail {
     @ManyToOne
     @JoinColumn(name = "product_detail_id", foreignKey = @jakarta.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private ProductDetail productDetail;
+
+    public OrderDetail(CartDetail cartDetail) {
+        this();
+        this.quantity = cartDetail.getQuantity();
+        this.total = cartDetail.getTotal();
+        this.productDetail = cartDetail.getProductDetail();
+    }
 
 }

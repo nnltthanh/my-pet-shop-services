@@ -11,5 +11,5 @@ import java.util.ArrayList;
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, Long> {
 
     ArrayList<ProductDetail> findByProduct_Id(Long productId);
-    
+
 }

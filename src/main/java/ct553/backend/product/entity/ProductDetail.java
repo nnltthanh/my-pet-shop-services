@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.springframework.stereotype.Component;
 
+import ct553.backend.coupon.Coupon;
 import ct553.backend.imagedata.ImageData;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -50,5 +51,10 @@ public class ProductDetail {
     @JoinColumn(name = "product_id", nullable = false)
     @NotNull(message = "Reference product is missing")
     private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "coupon_id", nullable = true)
+    private Coupon coupon;
+
 
 }

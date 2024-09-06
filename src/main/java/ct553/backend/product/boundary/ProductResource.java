@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ct553.backend.CloudinaryService;
 import ct553.backend.imagedata.ImageDataService;
-import ct553.backend.pet.PetBreed;
+import ct553.backend.pet.entity.PetBreed;
 import ct553.backend.product.entity.ProductOverviewResponse;
 import ct553.backend.product.entity.ProductSearchingCriteria;
 import ct553.backend.product.entity.ProductSortingCriteria;

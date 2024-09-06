@@ -2,7 +2,6 @@ package ct553.backend.pet.entity;
 
 import org.springframework.stereotype.Component;
 
-import ct553.backend.pet.PetBreed;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class ReviewResource {
 
     @Autowired
-    ReviewService ReviewService;
+    ReviewService reviewService;
 
     private final CloudinaryService cloudinaryService;
 
@@ -42,21 +42,21 @@ public class ReviewResource {
         ArrayList<Review> reviews;
 
         if (isGetAllProduct) {
-            reviews = this.ReviewService.getAllReviews();
+            reviews = this.reviewService.getAllReviews();
         } else
-            reviews = this.ReviewService.getAllReviewsByProductId(productId);
+            reviews = this.reviewService.getAllReviewsByProductId(productId);
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<ArrayList<Review>> getAllReviewsByCustomerId(@PathVariable Long customerId) {
-        ArrayList<Review> reviews = this.ReviewService.getAllReviewsByCustomerId(customerId);
+        ArrayList<Review> reviews = this.reviewService.getAllReviewsByCustomerId(customerId);
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getReviewById(@PathVariable Long id) {
-        Review review = this.ReviewService.findReviewById(id);
+        Review review = this.reviewService.findReviewById(id);
         if (review == null) {
             return new ResponseEntity<>("This review is not exist", HttpStatus.NOT_FOUND);
         }
@@ -65,7 +65,7 @@ public class ReviewResource {
 
     @GetMapping("orders/{orderId}")
     public ResponseEntity<?> getReviewByOrderId(@PathVariable Long orderId) {
-        ArrayList<Review> reviews = this.ReviewService.findReviewByOrderId(orderId);
+        ArrayList<Review> reviews = this.reviewService.findReviewByOrderId(orderId);
         if (reviews == null) {
             return new ResponseEntity<>("This review is not exist", HttpStatus.NOT_FOUND);
         }
@@ -74,7 +74,7 @@ public class ReviewResource {
 
     @GetMapping("/order-details/{orderDetailId}")
     public ResponseEntity<?> getReviewByOrderDetailId(@PathVariable Long orderDetailId) {
-        ArrayList<Review> review = this.ReviewService.findReviewByOrderDetailId(orderDetailId);
+        ArrayList<Review> review = this.reviewService.findReviewByOrderDetailId(orderDetailId);
         if (review == null) {
             return new ResponseEntity<>("This review is not exist", HttpStatus.NOT_FOUND);
         }
@@ -84,39 +84,32 @@ public class ReviewResource {
     @PostMapping(value = "/order-details/{orderDetailId}")
     public ResponseEntity<Review> addReview(@PathVariable Long orderDetailId,
             @RequestBody Review review) {
-        this.ReviewService.addReview(orderDetailId, review);
+        this.reviewService.addReview(orderDetailId, review);
         return new ResponseEntity<>(review, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteReviewById(@PathVariable Long id) {
-        Review Review = this.ReviewService.findReviewById(id);
+        Review Review = this.reviewService.findReviewById(id);
         if (Review == null) {
             return new ResponseEntity<>("Can not find review to delete", HttpStatus.NOT_FOUND);
         }
 
-        this.ReviewService.deleteReviewById(id);
+        this.reviewService.deleteReviewById(id);
         return new ResponseEntity<>("Deleted successfully", HttpStatus.OK);
     }
 
     @PutMapping(value = "{id}/upload")
     public ResponseEntity<?> upload(@PathVariable Long id, @Nullable @RequestParam("images") List<MultipartFile> files) throws IOException
              {
-        StringBuilder imageUrls = new StringBuilder();
+        List<ImageData> imageData = new ArrayList<>();
 
         if (Objects.nonNull(files)) {
             for (MultipartFile multipartFile : files) {
                 String imageUrl = this.cloudinaryService.uploadFile(multipartFile);
-
-                imageUrls.append(imageUrl);
-
-                if (multipartFile != files.get(files.size() - 1))
-                    imageUrls.append(",");
+                imageData.add(new ImageData(null, imageUrl, ImageDataType.REVIEW));
             }
-            ImageData imageData = new ImageData();
-            imageData.setPath(imageUrls.toString());
-            imageData.setType(ImageDataType.REVIEW);
-            Review review = this.ReviewService.updateReviewImages(id, imageData);
+            Review review = this.reviewService.updateReviewImages(id, imageData);
             return new ResponseEntity<>(review, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.OK);
