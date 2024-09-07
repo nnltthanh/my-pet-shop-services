@@ -3,7 +3,6 @@ package ct553.backend.product.boundary;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,62 +11,43 @@ import org.springframework.web.multipart.MultipartFile;
 import ct553.backend.CloudinaryServiceImp;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.imagedata.ImageDataType;
-import ct553.backend.pet.boundary.PetCategoryService;
-import ct553.backend.pet.entity.PetCategory;
-import ct553.backend.product.control.PetProductRepository;
-import ct553.backend.product.entity.PetProduct;
+import ct553.backend.product.control.AccessoryProductRepository;
+import ct553.backend.product.entity.AccessoryProduct;
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class PetProductService {
+public class AccessoryProductService {
 
     @Autowired
-    private PetProductRepository petRepository;
-
-    @Autowired
-    private PetCategoryService petCategoryService;
+    private AccessoryProductRepository accessoryRepository;
 
     @Autowired
     private CloudinaryServiceImp cloudinaryService;
 
-    public ArrayList<PetProduct> findAll() {
-        return (ArrayList<PetProduct>) petRepository.findAll();
+    public ArrayList<AccessoryProduct> findAll() {
+        return (ArrayList<AccessoryProduct>) accessoryRepository.findAll();
     }
 
-    public PetProduct findById(Long id) {
-        return petRepository.findById(id).orElse(null);
+    public AccessoryProduct findById(Long id) {
+        return accessoryRepository.findById(id).orElse(null);
     }
 
-    public PetProduct add(PetProduct pet, MultipartFile multipartFile) throws IOException {
-        if (Objects.nonNull(pet)) {
-            pet.setEngName(deAccent(pet.getName()));
-            this.mapPetCategory(pet);
+    public AccessoryProduct add(AccessoryProduct accessory, MultipartFile multipartFile) throws IOException {
+        if (Objects.nonNull(accessory)) {
+            accessory.setEngName(deAccent(accessory.getName()));
             if (Objects.nonNull(multipartFile)) {
                 String imageUrl = this.cloudinaryService.uploadFile(multipartFile);
                 ImageData imageData = new ImageData(null, imageUrl, ImageDataType.PRODUCT);
                 // imageData = this.imageDataService.addImageData(imageData);
-                pet.setImageData(imageData);
+                accessory.setImageData(imageData);
             }
         }
-        return this.petRepository.save(pet);
+        return this.accessoryRepository.save(accessory);
     }
 
     public void deleteById(Long id) {
-        this.petRepository.deleteById(id);
-    }
-
-    private void mapPetCategory(PetProduct pet) {
-        if (Optional.ofNullable(pet).isEmpty()) {
-            throw new IllegalArgumentException("Not found pet product");
-        }
-        Optional<PetCategory> optionalPetCategory = Optional.ofNullable(pet.getCategory());
-        optionalPetCategory.ifPresentOrElse(
-                category -> {
-                    category = petCategoryService.findById(category.getId());
-                    pet.setCategory(category);
-                },
-                () -> new IllegalArgumentException("Not found pet category"));
+        this.accessoryRepository.deleteById(id);
     }
 
     private String deAccent(String text) {
