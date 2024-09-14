@@ -16,10 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import ct553.backend.imagedata.ImageData;
-import ct553.backend.product.control.ProductDetailRepository;
 import ct553.backend.product.control.ProductRepository;
 import ct553.backend.product.entity.Product;
-import ct553.backend.product.entity.ProductDetail;
 import ct553.backend.product.entity.ProductOverviewResponse;
 import ct553.backend.product.entity.ProductSearchingCriteria;
 import ct553.backend.product.entity.ProductSortingCriteria;
@@ -31,9 +29,6 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
-
-    @Autowired
-    private ProductDetailRepository productDetailRepository;
 
     void addProduct(Product product) {
         product.setEngName(this.deAccent(product.getName()));
@@ -71,9 +66,9 @@ public class ProductService {
         }
     }
 
-    Product updateProductImages(Long id, ImageData images) {
+    Product updateProductImages(Long id, ImageData imageData) {
         Product product = this.findProductById(id);
-        product.setImageData(images);
+        product.setImageData(imageData);
         return this.productRepository.save(product);
     }
 
@@ -87,53 +82,6 @@ public class ProductService {
 
     void deleteProductById(Long id) {
         this.productRepository.deleteById(id);
-    }
-
-    public void addProductDetail(Long productId, ProductDetail productDetail) {
-        Product product = this.findProductById(productId);
-
-        if (product != null) {
-            productDetail.setProduct(product);
-            this.productDetailRepository.save(productDetail);
-        }
-    }
-
-    public ProductDetail updateProductDetail(Long id, ProductDetail productDetailUpdateInfo) {
-        ProductDetail existingProductDetail = this.productDetailRepository.findById(id).orElse(null);
-
-        if (Objects.nonNull(existingProductDetail)) {
-            existingProductDetail.setUnit(productDetailUpdateInfo.getUnit() != null ? productDetailUpdateInfo.getUnit()
-                    : existingProductDetail.getUnit());
-            existingProductDetail
-                    .setQuantity(productDetailUpdateInfo.getQuantity() > 0 ? productDetailUpdateInfo.getQuantity()
-                            : existingProductDetail.getQuantity());
-            existingProductDetail.setSold(productDetailUpdateInfo.getSold() >= 0 ? productDetailUpdateInfo.getSold()
-                    : existingProductDetail.getSold());
-            existingProductDetail.setImageData(
-                    productDetailUpdateInfo.getImageData() != null ? productDetailUpdateInfo.getImageData()
-                            : existingProductDetail.getImageData());
-
-            this.productDetailRepository.save(existingProductDetail);
-            return existingProductDetail;
-        } else {
-            return null;
-        }
-    }
-
-    public ProductDetail updateProductDetail(ProductDetail productDetail) {
-        return this.productDetailRepository.save(productDetail);
-    }
-
-    ArrayList<ProductDetail> getListProductDetails() {
-        return (ArrayList<ProductDetail>) this.productDetailRepository.findAll();
-    }
-
-    ArrayList<ProductDetail> getAllProductDetails(Long productId) {
-        return (ArrayList<ProductDetail>) this.productDetailRepository.findByProduct_Id(productId);
-    }
-
-    public ProductDetail findProductDetailById(Long id) {
-        return this.productDetailRepository.findById(id).orElse(null);
     }
 
     // public ArrayList<Product> findTop5MostSale() {
@@ -161,16 +109,6 @@ public class ProductService {
 
     // return recommendedProducts;
     // }
-
-    void deleteProductDetailById(Long id) {
-        this.productDetailRepository.deleteById(id);
-    }
-
-    ProductDetail updateProductDetailImageData(Long id, ImageData imageData) {
-        ProductDetail detail = this.findProductDetailById(id);
-        detail.setImageData(imageData);
-        return this.productDetailRepository.save(detail);
-    }
 
     private Sort buildSortCriteria(ProductSortingCriteria sortingCriteria) {
         if (Objects.isNull(sortingCriteria) || sortingCriteria.isEmptySortingCriteria()) {

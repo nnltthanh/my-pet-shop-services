@@ -14,7 +14,7 @@ import ct553.backend.order.control.OrderDetailRepository;
 import ct553.backend.order.control.OrderRepository;
 import ct553.backend.order.entity.Order;
 import ct553.backend.order.entity.OrderDetail;
-import ct553.backend.product.boundary.ProductService;
+import ct553.backend.product.boundary.ProductDetailService;
 import ct553.backend.product.entity.ProductDetail;
 import jakarta.transaction.Transactional;
 
@@ -35,7 +35,7 @@ public class OrderService {
     private CartService cartService;
 
     @Autowired
-    private ProductService productService;
+    private ProductDetailService productDetailService;
 
     void addOrder(Long customerId, Order order) {
         Customer customer = this.customerService.findById(customerId);
@@ -72,9 +72,9 @@ public class OrderService {
             this.cartService.deleteCartDetail(id);
             this.orderDetailRepository.save(orderDetail);
             
-            ProductDetail productDetail = this.productService.findProductDetailById(orderDetail.getProductDetail().getId());
+            ProductDetail productDetail = this.productDetailService.findProductDetailById(orderDetail.getProductDetail().getId());
             productDetail.setSold(productDetail.getSold() + orderDetail.getQuantity());
-            this.productService.updateProductDetail(productDetail);
+            this.productDetailService.updateProductDetail(productDetail);
         });
 
         return this.findAllOrderDetailsByOrder(orderId);

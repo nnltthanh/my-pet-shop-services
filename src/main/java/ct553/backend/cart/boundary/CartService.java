@@ -11,6 +11,7 @@ import ct553.backend.cart.control.CartRepository;
 import ct553.backend.cart.entity.Cart;
 import ct553.backend.cart.entity.CartDetail;
 import ct553.backend.customer.CustomerService;
+import ct553.backend.product.boundary.ProductDetailService;
 import ct553.backend.product.boundary.ProductService;
 import ct553.backend.product.entity.ProductDetail;
 import jakarta.transaction.Transactional;
@@ -29,6 +30,9 @@ public class CartService {
     ProductService productService;
 
     @Autowired
+    ProductDetailService productDetailService;
+
+    @Autowired
     CustomerService customerService;
 
     public CartDetail addProductDetailToCart(Long customerId, CartDetail cartDetail) {
@@ -37,7 +41,7 @@ public class CartService {
 
         Cart cart = this.findCartByCustomerId(customerId);
 
-        ProductDetail productDetail = this.productService.findProductDetailById(productDetailId);
+        ProductDetail productDetail = this.productDetailService.findProductDetailById(productDetailId);
 
         // handle for exist cart detail
         CartDetail cartDetailDB = this.cartDetailRepository.findByProductDetailId(productDetailId).orElse(null);
@@ -56,7 +60,7 @@ public class CartService {
                 this.cartDetailRepository.delete(cartDetailDB);
             }
 
-            this.productService.addProductDetail(productDetail.getProduct().getId(), productDetail);
+            this.productDetailService.addProductDetail(productDetail, null);
 
             BigDecimal total = BigDecimal.valueOf(cartDetail.getQuantity())
                     .multiply(productDetail.getPrice());

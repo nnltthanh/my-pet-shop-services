@@ -2,8 +2,6 @@ package ct553.backend.review;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,9 +69,9 @@ public class ReviewService {
         this.reviewRepository.deleteById(id);
     }
 
-    Review updateReviewImages(Long id, List<ImageData> imageData) {
+    Review updateReviewImages(Long id, ImageData imageData) {
         Review review = this.findReviewById(id);
-        review.setImageData(new HashSet<ImageData>(imageData));
+        review.setImageData(imageData);
         return this.reviewRepository.save(review);
     }
 

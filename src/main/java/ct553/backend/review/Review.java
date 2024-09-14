@@ -1,7 +1,6 @@
 package ct553.backend.review;
 
 import java.util.Date;
-import java.util.Set;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -22,7 +21,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -65,8 +64,8 @@ public class Review {
     @JoinColumn(name = "order_detail_id")
     private OrderDetail orderDetail;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "image_data_id")
-    private Set<ImageData> imageData;
+    private ImageData imageData;
 
 }

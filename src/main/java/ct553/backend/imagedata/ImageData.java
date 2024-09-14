@@ -28,9 +28,14 @@ public class ImageData {
     private Long id;
 
     @Column(columnDefinition = "TEXT")
-    private String path;
+    private String imageUrls;
 
     @Enumerated(EnumType.STRING)
     private ImageDataType type;
+
+    public ImageData(String path, ImageDataType type) {
+        this.imageUrls = path;
+        this.type = type;
+    }
 
 }

@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import ct553.backend.CloudinaryService;
 import ct553.backend.imagedata.ImageData;
+import ct553.backend.imagedata.ImageDataService;
 import ct553.backend.imagedata.ImageDataType;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,8 @@ public class ReviewResource {
     @Autowired
     ReviewService reviewService;
 
-    private final CloudinaryService cloudinaryService;
+    @Autowired
+    ImageDataService imageDataService;
 
     @GetMapping
     public ResponseEntity<ArrayList<Review>> getAllReviewsByProductId(@PathVariable Long productId,
@@ -102,13 +103,8 @@ public class ReviewResource {
     @PutMapping(value = "{id}/upload")
     public ResponseEntity<?> upload(@PathVariable Long id, @Nullable @RequestParam("images") List<MultipartFile> files) throws IOException
              {
-        List<ImageData> imageData = new ArrayList<>();
-
         if (Objects.nonNull(files)) {
-            for (MultipartFile multipartFile : files) {
-                String imageUrl = this.cloudinaryService.uploadFile(multipartFile);
-                imageData.add(new ImageData(null, imageUrl, ImageDataType.REVIEW));
-            }
+            ImageData imageData = this.imageDataService.buildImageData(files, ImageDataType.REVIEW);
             Review review = this.reviewService.updateReviewImages(id, imageData);
             return new ResponseEntity<>(review, HttpStatus.OK);
         }

@@ -37,8 +37,6 @@ public class ProductDetail {
     @Column(precision = 10, scale = 2)
     private BigDecimal price;
 
-    private String unit; // TODO -> need to remove
-
     private int quantity;
 
     private int sold;

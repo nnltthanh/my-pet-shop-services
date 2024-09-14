@@ -105,7 +105,7 @@ public class UserResource {
     public ResponseEntity<?> updateAvatar(@PathVariable Long id, @RequestParam("image") MultipartFile image) throws IOException {
         String imageURL = cloudinaryService.uploadFile(image);
         ImageData avatar = new ImageData();
-        avatar.setPath(imageURL);
+        avatar.setImageUrls(imageURL);
         avatar.setType(ImageDataType.AVATAR);
         User user = this.userService.updateAvatar(id, avatar);
 
