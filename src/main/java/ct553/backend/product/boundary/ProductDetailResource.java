@@ -74,7 +74,6 @@ public class ProductDetailResource {
         }
 
         ProductDetail updatedProductDetail = this.productService.updateProductDetail(id, updatedProductDetailInfo);
-        System.out.println(updatedProductDetail);
         return new ResponseEntity<>(updatedProductDetail, HttpStatus.OK);
     }
 

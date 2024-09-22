@@ -47,7 +47,6 @@ public class CustomerService {
     public Customer updateCustomerInfo(Long id, Customer customer) {
         Customer existingCustomer = findById(id);
         if (existingCustomer != null) {
-            System.out.println(customer);
             existingCustomer.setName(customer.getName());
             existingCustomer.setEmail(customer.getEmail());
             existingCustomer.setName(customer.getName());

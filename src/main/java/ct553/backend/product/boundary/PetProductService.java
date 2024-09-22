@@ -2,11 +2,18 @@ package ct553.backend.product.boundary;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import ct553.backend.CloudinaryServiceImp;
@@ -16,6 +23,9 @@ import ct553.backend.pet.boundary.PetCategoryService;
 import ct553.backend.pet.entity.PetCategory;
 import ct553.backend.product.control.PetProductRepository;
 import ct553.backend.product.entity.PetProduct;
+import ct553.backend.product.entity.PetProductOverviewResponse;
+import ct553.backend.product.entity.ProductSearchingCriteria;
+import ct553.backend.product.entity.ProductSortingCriteria;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -31,8 +41,14 @@ public class PetProductService {
     @Autowired
     private CloudinaryServiceImp cloudinaryService;
 
-    public ArrayList<PetProduct> findAll() {
-        return (ArrayList<PetProduct>) petRepository.findAll();
+    public PetProductOverviewResponse findPetProductOverviewResponseBy(ProductSortingCriteria sortingCriteria,
+            ProductSearchingCriteria searchingCriteria, Pageable pageable) {
+        Page<PetProduct> products = petRepository.findAllBy(
+                searchingCriteria,
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)));
+        List<PetProduct> data = new ArrayList<>(products.stream().toList());
+
+        return PetProductOverviewResponse.from(products.getTotalElements(), data);
     }
 
     public PetProduct findById(Long id) {
@@ -64,10 +80,55 @@ public class PetProductService {
         Optional<PetCategory> optionalPetCategory = Optional.ofNullable(pet.getCategory());
         optionalPetCategory.ifPresentOrElse(
                 category -> {
-                    category = petCategoryService.findById(category.getId());
-                    pet.setCategory(category);
+                    PetCategory categoryDB = petCategoryService.findByNameAndBreed(category.getName(), category.getBreed());
+                    if (categoryDB == null) {
+                        pet.setCategory(this.petCategoryService.add(category));
+                    } else {
+                        pet.setCategory(categoryDB);
+                    }
+                    System.out.println(pet.getCategory());
+                    
                 },
                 () -> new IllegalArgumentException("Not found pet category"));
+    }
+
+    public PetProduct updateProduct(Long id, PetProduct productUpdateInfo, MultipartFile multipartFile) throws IOException {
+        PetProduct existingProduct = this.petRepository.findById(id).orElse(null);
+
+        if (existingProduct == null) {
+            return null;
+        }
+
+        existingProduct.setName(
+                productUpdateInfo.getName() != null ? productUpdateInfo.getName() : existingProduct.getName());
+        existingProduct.setEngName(deAccent(existingProduct.getName()));
+        existingProduct.setPrice(productUpdateInfo.getPrice() != null ? productUpdateInfo.getPrice()
+                        : existingProduct.getPrice());
+        existingProduct.setDescription(productUpdateInfo.getDescription() != null ? productUpdateInfo.getDescription()
+                : existingProduct.getDescription());
+        existingProduct.setCategory(productUpdateInfo.getCategory() != null ? productUpdateInfo.getCategory()
+                : existingProduct.getCategory());
+        this.mapPetCategory(existingProduct);
+
+        if (Objects.nonNull(multipartFile)) {
+            String imageUrl = this.cloudinaryService.uploadFile(multipartFile);
+            ImageData imageData = new ImageData(null, imageUrl, ImageDataType.PRODUCT);
+            // imageData = this.imageDataService.addImageData(imageData);
+            existingProduct.setImageData(imageData);
+        }
+
+        this.petRepository.save(existingProduct);
+        return existingProduct;
+    }
+
+    private Sort buildSortCriteria(ProductSortingCriteria sortingCriteria) {
+        if (Objects.isNull(sortingCriteria) || sortingCriteria.isEmptySortingCriteria()) {
+            return Sort.by(Direction.DESC, "updatedAt");
+        }
+        List<Sort.Order> orders = new ArrayList<>();
+        sortingCriteria.getAsc().stream().forEach(value -> orders.add(Sort.Order.by(value).with(Direction.ASC)));
+        sortingCriteria.getDesc().stream().forEach(value -> orders.add(Sort.Order.by(value).with(Direction.DESC)));
+        return CollectionUtils.isEmpty(orders) ? Sort.unsorted() : Sort.by(orders);
     }
 
     private String deAccent(String text) {

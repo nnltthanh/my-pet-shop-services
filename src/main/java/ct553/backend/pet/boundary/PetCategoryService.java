@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ct553.backend.pet.control.PetCategoryRepository;
+import ct553.backend.pet.entity.PetBreed;
 import ct553.backend.pet.entity.PetCategory;
 
 @Service
@@ -22,8 +23,12 @@ public class PetCategoryService {
         return petCategoryRepository.findById(id).orElse(null);
     }
 
-    public void add(PetCategory pet) {
-        this.petCategoryRepository.save(pet);
+    public PetCategory findByNameAndBreed(String name, PetBreed petBreed) {
+        return petCategoryRepository.findByNameIgnoreCaseAndBreed(name, petBreed).orElse(null);
+    }
+
+    public PetCategory add(PetCategory pet) {
+        return this.petCategoryRepository.save(pet);
     }
 
     public void deleteById(Long id) {

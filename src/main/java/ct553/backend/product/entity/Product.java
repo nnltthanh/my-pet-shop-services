@@ -85,7 +85,6 @@ public class Product {
 
     @Transient
     public String getProductType() {
-        System.out.println(this.getId() + "  " + this.getClass().getAnnotation(DiscriminatorValue.class).value());
         return this.getClass().getAnnotation(DiscriminatorValue.class).value();
     }
 
