@@ -2,6 +2,7 @@ package ct553.backend.product.boundary;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import ct553.backend.imagedata.ImageData;
 import ct553.backend.imagedata.ImageDataType;
 import ct553.backend.pet.boundary.PetCategoryService;
 import ct553.backend.pet.entity.PetCategory;
+import ct553.backend.pet.healthrecord.HealthRecord;
 import ct553.backend.product.control.PetProductRepository;
 import ct553.backend.product.entity.PetProduct;
 import ct553.backend.product.entity.PetProductOverviewResponse;
@@ -46,7 +48,14 @@ public class PetProductService {
         Page<PetProduct> products = petRepository.findAllBy(
                 searchingCriteria,
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)));
-        List<PetProduct> data = new ArrayList<>(products.stream().toList());
+        List<PetProduct> data = new ArrayList<>(products.stream().map(p -> {
+            if (p.getHealthRecord() != null && !p.getHealthRecord().isEmpty()) {
+                HealthRecord latestHealthRecord = p.getHealthRecord().stream()
+                        .sorted(Comparator.comparing(HealthRecord::getCreatedAt).reversed()).toList().get(0);
+                p.setLatestHealthRecord(latestHealthRecord);
+            }
+            return p;
+        }).toList());
 
         return PetProductOverviewResponse.from(products.getTotalElements(), data);
     }
@@ -55,18 +64,23 @@ public class PetProductService {
         return petRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public PetProduct add(PetProduct pet, MultipartFile multipartFile) throws IOException {
         if (Objects.nonNull(pet)) {
             pet.setEngName(deAccent(pet.getName()));
             this.mapPetCategory(pet);
+            pet.setHealthRecord(pet.getHealthRecord());
             if (Objects.nonNull(multipartFile)) {
                 String imageUrl = this.cloudinaryService.uploadFile(multipartFile);
                 ImageData imageData = new ImageData(null, imageUrl, ImageDataType.PRODUCT);
-                // imageData = this.imageDataService.addImageData(imageData);
                 pet.setImageData(imageData);
             }
         }
-        return this.petRepository.save(pet);
+        var petDB = this.petRepository.save(pet);
+        pet.getHealthRecord().forEach(record -> {
+            record.setPetProduct(new PetProduct(petDB.getId()));
+        });
+        return petDB;
     }
 
     public void deleteById(Long id) {
@@ -80,40 +94,61 @@ public class PetProductService {
         Optional<PetCategory> optionalPetCategory = Optional.ofNullable(pet.getCategory());
         optionalPetCategory.ifPresentOrElse(
                 category -> {
-                    PetCategory categoryDB = petCategoryService.findByNameAndBreed(category.getName(), category.getBreed());
+                    PetCategory categoryDB = petCategoryService.findByNameAndBreed(category.getName(),
+                            category.getBreed());
                     if (categoryDB == null) {
                         pet.setCategory(this.petCategoryService.add(category));
                     } else {
                         pet.setCategory(categoryDB);
                     }
-                    System.out.println(pet.getCategory());
-                    
                 },
                 () -> new IllegalArgumentException("Not found pet category"));
     }
 
-    public PetProduct updateProduct(Long id, PetProduct productUpdateInfo, MultipartFile multipartFile) throws IOException {
+    public PetProduct updateProduct(Long id, PetProduct productUpdateInfo, MultipartFile multipartFile)
+            throws IOException {
         PetProduct existingProduct = this.petRepository.findById(id).orElse(null);
 
         if (existingProduct == null) {
             return null;
         }
 
+        HealthRecord latestHealthRecord = existingProduct.getHealthRecord().stream()
+                        .sorted(Comparator.comparing(HealthRecord::getCreatedAt).reversed()).toList().get(0);
+
+        HealthRecord newHealthRecord = productUpdateInfo.getLatestHealthRecord();
+
         existingProduct.setName(
                 productUpdateInfo.getName() != null ? productUpdateInfo.getName() : existingProduct.getName());
         existingProduct.setEngName(deAccent(existingProduct.getName()));
+        existingProduct.setQuantity(productUpdateInfo.getQuantity());
         existingProduct.setPrice(productUpdateInfo.getPrice() != null ? productUpdateInfo.getPrice()
-                        : existingProduct.getPrice());
-        existingProduct.setDescription(productUpdateInfo.getDescription() != null ? productUpdateInfo.getDescription()
-                : existingProduct.getDescription());
+                : existingProduct.getPrice());
         existingProduct.setCategory(productUpdateInfo.getCategory() != null ? productUpdateInfo.getCategory()
                 : existingProduct.getCategory());
+        existingProduct.setColor(productUpdateInfo.getColor() != null ? productUpdateInfo.getColor()
+                : existingProduct.getColor());
+        existingProduct.setGender(productUpdateInfo.getGender() != null ? productUpdateInfo.getGender()
+                : existingProduct.getGender());
+        existingProduct.setDateOfBirth(productUpdateInfo.getDateOfBirth() != null ? productUpdateInfo.getDateOfBirth()
+                : existingProduct.getDateOfBirth());
+        existingProduct.setOrigin(productUpdateInfo.getOrigin() != null ? productUpdateInfo.getOrigin()
+                : existingProduct.getOrigin());
+        existingProduct.setDescription(productUpdateInfo.getDescription() != null ? productUpdateInfo.getDescription()
+                : existingProduct.getDescription());
+
+        if (newHealthRecord != null) {
+            if (!newHealthRecord.equals(latestHealthRecord)) {
+                newHealthRecord.setPetProduct(new PetProduct(existingProduct.getId()));
+                newHealthRecord.setId(null);
+                existingProduct.getHealthRecord().add(newHealthRecord);
+            }
+        }
         this.mapPetCategory(existingProduct);
 
         if (Objects.nonNull(multipartFile)) {
             String imageUrl = this.cloudinaryService.uploadFile(multipartFile);
             ImageData imageData = new ImageData(null, imageUrl, ImageDataType.PRODUCT);
-            // imageData = this.imageDataService.addImageData(imageData);
             existingProduct.setImageData(imageData);
         }
 

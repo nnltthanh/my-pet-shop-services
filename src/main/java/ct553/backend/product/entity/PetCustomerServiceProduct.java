@@ -2,6 +2,8 @@ package ct553.backend.product.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import ct553.backend.pet.entity.PetCustomer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,9 +30,11 @@ public class PetCustomerServiceProduct {
     private Long id;
     
     @Column
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private LocalDateTime serveFrom;
 
     @Column
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private LocalDateTime serveTo;
 
     @ManyToOne

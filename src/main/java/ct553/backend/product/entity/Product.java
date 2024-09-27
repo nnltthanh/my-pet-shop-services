@@ -87,5 +87,9 @@ public class Product {
     public String getProductType() {
         return this.getClass().getAnnotation(DiscriminatorValue.class).value();
     }
+    
+    public Product(Long id) {
+        this.id = id;
+    }
 
 }
