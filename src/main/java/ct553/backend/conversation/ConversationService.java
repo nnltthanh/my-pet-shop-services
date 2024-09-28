@@ -14,7 +14,6 @@ public class ConversationService {
     @Autowired
     private ConversationRepository conversationRepository;
     
-    @SuppressWarnings("null")
     void addConversation(Conversation conversation) {
         this.conversationRepository.save(conversation);
     }
@@ -23,12 +22,10 @@ public class ConversationService {
         return (ArrayList<Conversation>) this.conversationRepository.findAll();
     }
 
-    @SuppressWarnings("null")
     public Conversation findConversationById(Long id) {
         return  this.conversationRepository.findById(id).orElse(null);
     }
 
-    @SuppressWarnings("null")
     void deleteConversationById(Long id) {
         this.conversationRepository.deleteById(id);
     }

@@ -84,7 +84,7 @@ public class ProductResource {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProductById(@PathVariable Long id) {
+    public ResponseEntity<?> deleteProductById(@PathVariable Long id) {
         Product product = this.productService.findProductById(id);
         if (product == null) {
             return new ResponseEntity<>("Can not find product to delete",
@@ -92,7 +92,7 @@ public class ProductResource {
         }
 
         this.productService.deleteProductById(id);
-        return new ResponseEntity<>("Deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

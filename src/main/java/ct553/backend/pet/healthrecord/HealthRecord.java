@@ -41,14 +41,14 @@ public class HealthRecord {
     private Long id;
 
     @Column
-    private float weight;
+    private Float weight;
 
     @Column
-    private float age;
+    private Float age;
 
     @Column
     @JsonProperty("petLength")
-    private float length;
+    private Float length;
 
     @Column
     private String vaccination;
