@@ -1,7 +1,9 @@
 package ct553.backend.product.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -40,7 +42,7 @@ import lombok.NoArgsConstructor;
 @Validated
 @Entity
 @Data
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "product")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -84,12 +86,38 @@ public class Product {
     private Date updatedAt;
 
     @Transient
+    private InventoryStatus inventoryStatus;
+
+    @Transient 
+    private long countSold;
+
+    @Transient
+    private List<ProductDetail> productDetails = new ArrayList<>();
+
+    @Transient
     public String getProductType() {
         return this.getClass().getAnnotation(DiscriminatorValue.class).value();
     }
-    
+
     public Product(Long id) {
         this.id = id;
+    }
+
+    public Product(Product product) {
+        this.id = product.id;
+        this.name = product.name;
+        this.engName = product.engName;
+        this.price = product.price;
+        this.description = product.description;
+        this.imageData = product.imageData;
+        this.createdAt = product.createdAt;
+        this.updatedAt = product.updatedAt;
+    }
+
+    public Product(Product product, InventoryStatus inventoryStatus, long countSold) {
+        this(product);
+        this.inventoryStatus = inventoryStatus;
+        this.countSold = countSold;
     }
 
 }

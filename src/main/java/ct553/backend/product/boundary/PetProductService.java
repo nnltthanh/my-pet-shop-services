@@ -26,6 +26,7 @@ import ct553.backend.pet.healthrecord.HealthRecord;
 import ct553.backend.product.control.PetProductRepository;
 import ct553.backend.product.entity.PetProduct;
 import ct553.backend.product.entity.PetProductOverviewResponse;
+import ct553.backend.product.entity.ProductDetail;
 import ct553.backend.product.entity.ProductSearchingCriteria;
 import ct553.backend.product.entity.ProductSortingCriteria;
 import jakarta.transaction.Transactional;
@@ -42,6 +43,9 @@ public class PetProductService {
 
     @Autowired
     private CloudinaryServiceImp cloudinaryService;
+
+    @Autowired
+    ProductDetailService productDetailService;
 
     public PetProductOverviewResponse findPetProductOverviewResponseBy(ProductSortingCriteria sortingCriteria,
             ProductSearchingCriteria searchingCriteria, Pageable pageable) {
@@ -80,7 +84,21 @@ public class PetProductService {
         pet.getHealthRecord().forEach(record -> {
             record.setPetProduct(new PetProduct(petDB.getId()));
         });
+        this.buildProductDetail(pet);
         return petDB;
+    }
+
+    private void buildProductDetail(PetProduct petProduct) {
+        ProductDetail productDetail = new ProductDetail();
+        productDetail.setProduct(petProduct);
+        productDetail.setPrice(petProduct.getPrice());
+        productDetail.setQuantity(petProduct.getQuantity());
+        productDetail.setSold(0);
+        ImageData imageData = null;
+        if (petProduct.getImageData() != null) {
+            imageData = new ImageData(null, petProduct.getImageData().getImageUrls(), ImageDataType.PRODUCT_DETAIL);
+        }
+        this.productDetailService.add(productDetail, imageData);
     }
 
     public void deleteById(Long id) {
@@ -161,8 +179,9 @@ public class PetProductService {
             return Sort.by(Direction.DESC, "updatedAt");
         }
         List<Sort.Order> orders = new ArrayList<>();
-        sortingCriteria.getAsc().stream().forEach(value -> orders.add(Sort.Order.by(value).with(Direction.ASC)));
-        sortingCriteria.getDesc().stream().forEach(value -> orders.add(Sort.Order.by(value).with(Direction.DESC)));
+
+        sortingCriteria.getAsc().stream().filter(value -> !value.equalsIgnoreCase("inventoryStatus")).forEach(value -> orders.add(Sort.Order.by(value).with(Direction.ASC)));
+        sortingCriteria.getDesc().stream().filter(value -> !value.equalsIgnoreCase("inventoryStatus")).forEach(value -> orders.add(Sort.Order.by(value).with(Direction.DESC)));
         return CollectionUtils.isEmpty(orders) ? Sort.unsorted() : Sort.by(orders);
     }
 

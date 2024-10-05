@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import ct553.backend.imagedata.ImageData;
+import ct553.backend.pet.healthrecord.HealthRecord;
 import ct553.backend.product.control.ProductRepository;
+import ct553.backend.product.entity.PetProduct;
 import ct553.backend.product.entity.Product;
 import ct553.backend.product.entity.ProductOverviewResponse;
 import ct553.backend.product.entity.ProductSearchingCriteria;
@@ -29,6 +32,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private ProductDetailService productDetailService;
 
     void addProduct(Product product) {
         product.setEngName(this.deAccent(product.getName()));
@@ -46,7 +52,15 @@ public class ProductService {
     }
 
     public Product findProductById(Long id) {
-        return this.productRepository.findById(id).orElse(null);
+        Product product = this.productRepository.findById(id).orElse(null);
+        if (product instanceof PetProduct) {
+            HealthRecord latestHealthRecord = ((PetProduct)product).getHealthRecord().stream()
+                        .sorted(Comparator.comparing(HealthRecord::getCreatedAt).reversed()).toList().get(0);
+
+            ((PetProduct)product).setLatestHealthRecord(latestHealthRecord);
+        }
+        product.setProductDetails(this.productDetailService.getAllProductDetails(id));
+        return product;
     }
 
     public Product updateProduct(Long id, Product productUpdateInfo) {

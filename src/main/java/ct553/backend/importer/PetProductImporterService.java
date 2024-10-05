@@ -62,7 +62,6 @@ public class PetProductImporterService {
             Cell petName = row.getCell(columnNameIndexMap.get(PetProductImportColumnHelper.ImportColumnName.PRODUCT_NAME));
             if (petName != null && StringUtils.isNotBlank(petName.getStringCellValue())) {
                 petProduct.setName(petName.getStringCellValue());
-                System.out.println(petProduct.getName());
             }
 
             Cell imageUrl = row.getCell(columnNameIndexMap.get(PetProductImportColumnHelper.ImportColumnName.PRODUCT_IMAGE));
@@ -72,19 +71,16 @@ public class PetProductImporterService {
                 imageData.setImageUrls(formattedImageUrl);
                 imageData.setType(ImageDataType.PRODUCT);
                 petProduct.setImageData(imageData);
-                System.out.println(petProduct.getImageData());
             }
 
             Cell quantity = row.getCell(columnNameIndexMap.get(PetProductImportColumnHelper.ImportColumnName.PRODUCT_QUANTITY));
             if (quantity != null) {
                 petProduct.setQuantity((int)quantity.getNumericCellValue());
-                System.out.println(petProduct.getQuantity());
             }
 
             Cell price = row.getCell(columnNameIndexMap.get(PetProductImportColumnHelper.ImportColumnName.PRODUCT_PRICE));
             if (price != null) {
                 petProduct.setPrice(new BigDecimal(price.getNumericCellValue()));
-                System.out.println(petProduct.getPrice());
             }
 
             PetCategory petCategory = new PetCategory();
@@ -103,47 +99,39 @@ public class PetProductImporterService {
                 else if (petBreedString.equalsIgnoreCase("Hamster") || petBreedString.equalsIgnoreCase("Chuột Hamster")) {
                     petCategory.setBreed(PetBreed.HAMSTER);
                 }
-                System.out.println(petCategory.getBreed());
                 petCategory.setName(petCategoryNameString);
-                System.out.println(petCategory.getName());
                 petProduct.setCategory(petCategory);
             }
 
             Cell gender = row.getCell(columnNameIndexMap.get(PetProductImportColumnHelper.ImportColumnName.PRODUCT_GENDER));
             if (gender != null) {
                 petProduct.setGender(Gender.from(gender.getStringCellValue()));
-                System.out.println(petProduct.getGender());
             }
 
             Cell color = row.getCell(columnNameIndexMap.get(PetProductImportColumnHelper.ImportColumnName.PRODUCT_COLOR));
             if (color != null && StringUtils.isNotBlank(color.getStringCellValue())) {
                 petProduct.setColor(color.getStringCellValue());
-                System.out.println(petProduct.getColor());
             }
 
             HealthRecord healthRecord = new HealthRecord();
             Cell weight = row.getCell(columnNameIndexMap.get(PetProductImportColumnHelper.ImportColumnName.PRODUCT_WEIGHT));
             if (weight != null) {
                 healthRecord.setWeight((float)weight.getNumericCellValue());
-                System.out.println(healthRecord.getWeight());
             }
 
             Cell length = row.getCell(columnNameIndexMap.get(PetProductImportColumnHelper.ImportColumnName.PRODUCT_LENGTH));
             if (length != null) {
                 healthRecord.setLength((float)length.getNumericCellValue());
-                System.out.println(healthRecord.getLength());
             }
 
             Cell vaccination = row.getCell(columnNameIndexMap.get(PetProductImportColumnHelper.ImportColumnName.PRODUCT_VACCINATION));
             if (vaccination != null && StringUtils.isNotBlank(vaccination.getStringCellValue())) {
                 healthRecord.setVaccination(vaccination.getStringCellValue());
-                System.out.println(healthRecord.getVaccination());
             }
             
             Cell origin = row.getCell(columnNameIndexMap.get(PetProductImportColumnHelper.ImportColumnName.PRODUCT_ORIGIN));
             if (origin != null && StringUtils.isNotBlank(origin.getStringCellValue())) {
                 petProduct.setOrigin(origin.getStringCellValue());
-                System.out.println(petProduct.getOrigin());
             }
 
             Cell dobCell = row.getCell(columnNameIndexMap.get(PetProductImportColumnHelper.ImportColumnName.PRODUCT_DOB));
@@ -153,13 +141,11 @@ public class PetProductImporterService {
                     petProduct.setDateOfBirth(dob.toInstant()
                                                 .atZone(ZoneId.systemDefault())
                                                 .toLocalDate());
-                    System.out.println(petProduct.getDateOfBirth());
     
                     long age = ChronoUnit.MONTHS.between(
                         petProduct.getDateOfBirth().withDayOfMonth(1),
                         LocalDate.now().withDayOfMonth(1));
                     healthRecord.setAge((float)age);
-                    System.out.println(age);
                 }
             }
 
@@ -177,7 +163,6 @@ public class PetProductImporterService {
             Cell description = row.getCell(columnNameIndexMap.get(PetProductImportColumnHelper.ImportColumnName.PRODUCT_DESCRIPTION));
             if (description != null && StringUtils.isNotBlank(description.getStringCellValue())) {
                 petProduct.setDescription(description.getStringCellValue());
-                System.out.println(petProduct.getDescription());
             }
             
             petProduct.getHealthRecord().add(healthRecord);

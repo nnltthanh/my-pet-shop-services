@@ -1,13 +1,20 @@
 package ct553.backend.product.entity;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ct553.backend.coupon.Coupon;
 import ct553.backend.imagedata.ImageData;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +23,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -48,11 +57,28 @@ public class ProductDetail {
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     @NotNull(message = "Reference product is missing")
+    @JsonIgnore
     private Product product;
 
     @ManyToOne
     @JoinColumn(name = "coupon_id", nullable = true)
     private Coupon coupon;
+
+    @Column(name = "created_at")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+    private Date createdAt;
+
+    @Column(name = "updated_at")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+    private Date updatedAt;
+
+    @Column(nullable = false)
+    @Convert(converter = InventoryStatusConverter.class)
+    private InventoryStatus inventoryStatus;
 
 
 }

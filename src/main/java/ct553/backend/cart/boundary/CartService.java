@@ -60,7 +60,7 @@ public class CartService {
                 this.cartDetailRepository.delete(cartDetailDB);
             }
 
-            this.productDetailService.addProductDetail(productDetail, null);
+            this.productDetailService.add(productDetail, null);
 
             BigDecimal total = BigDecimal.valueOf(cartDetail.getQuantity())
                     .multiply(productDetail.getPrice());

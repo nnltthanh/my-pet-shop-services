@@ -62,7 +62,7 @@ public class ProductDetailResource {
     public ResponseEntity<ProductDetail> addProductDetail(@Valid @RequestPart(value = "productDetail") ProductDetail productDetail,
             @RequestPart(value = "images", required = false) List<MultipartFile> files) throws IOException {
         ImageData imageData = this.imageDataService.buildImageData(files, ImageDataType.PRODUCT_DETAIL);
-        this.productService.addProductDetail(productDetail, imageData);
+        this.productService.add(productDetail, imageData);
         return new ResponseEntity<>(productDetail, HttpStatus.CREATED);
     }
 
