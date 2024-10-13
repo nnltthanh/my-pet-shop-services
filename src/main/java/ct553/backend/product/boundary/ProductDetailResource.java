@@ -24,6 +24,7 @@ import ct553.backend.imagedata.ImageData;
 import ct553.backend.imagedata.ImageDataService;
 import ct553.backend.imagedata.ImageDataType;
 import ct553.backend.product.entity.ProductDetail;
+import ct553.backend.product.entity.ProductDetailDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,12 +40,12 @@ public class ProductDetailResource {
     ImageDataService imageDataService;
 
     @GetMapping(value = { "", "/" })
-    public ArrayList<ProductDetail> getAllProductDetails() {
+    public List<ProductDetail> getAllProductDetails() {
         return this.productService.getListProductDetails();
     }
 
     @GetMapping(value = "/find-by-product/{productId}")
-    public ArrayList<ProductDetail> getAllProductDetails(@PathVariable Long productId) {
+    public List<ProductDetailDTO> getAllProductDetails(@PathVariable Long productId) {
         return this.productService.getAllProductDetails(productId);
     }
 

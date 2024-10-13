@@ -37,12 +37,8 @@ public class AddressResource {
     }
 
     @GetMapping("/customer/{id}/default")
-    public ResponseEntity<?> getDefaultAddress(@PathVariable Long id) {
-        ArrayList<Address> addresses = addressService.findDefaultAddress(id);
-        if (addresses == null) {
-            return new ResponseEntity<>("This user has not have default address", HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(addresses, HttpStatus.OK);
+    public Address getDefaultAddress(@PathVariable Long id) {
+        return addressService.findDefaultAddress(id);
     }
 
     @GetMapping("/customer/{id}")
@@ -68,11 +64,7 @@ public class AddressResource {
     }
 
     @PutMapping("/customer/{id}")
-    public ResponseEntity<String> updateAddressByCustomerId(@PathVariable Long id, @RequestBody Address address) {
-        if (this.addressService.updateAddress(id, address) != null) {
-            return new ResponseEntity<>("A address with id=" + address.getId() + " is updated successfully", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("The address with id=" + address.getId() + " fail updated. Try again!",
-                HttpStatus.BAD_REQUEST);
+    public void updateAddressByCustomerId(@PathVariable Long id, @RequestBody Address address) {
+        this.addressService.updateAddress(id, address);
     }
 }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ct553.backend.auth.UserKeycloakSerivce;
+import ct553.backend.user.UserDTO;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -13,6 +15,9 @@ public class CustomerService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    UserKeycloakSerivce userKeycloakSerivce;
 
     public ArrayList<Customer> findAll() {
         return (ArrayList<Customer>) customerRepository.findAll();
@@ -27,6 +32,7 @@ public class CustomerService {
     }
 
     public void add(Customer customer) {
+        this.userKeycloakSerivce.createUser(UserDTO.from(customer));
         this.customerRepository.save(customer);
     }
 
@@ -37,7 +43,7 @@ public class CustomerService {
     public Customer updateCustomer(Long id, Customer customer) {
         Customer existingCustomer = findById(id);
         if (existingCustomer != null) {
-            existingCustomer.setLocked(!existingCustomer.isLocked());
+            // existingCustomer.setLocked(!existingCustomer.isLocked()); TODO
             this.customerRepository.save(existingCustomer);
             return existingCustomer;
         }

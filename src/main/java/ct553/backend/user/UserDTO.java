@@ -2,16 +2,17 @@ package ct553.backend.user;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import ct553.backend.role.RoleDTO;
+import ct553.backend.customer.Customer;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserDTO {
     private Long id;
     private String account;
@@ -19,21 +20,30 @@ public class UserDTO {
     private String name;
     private String phone;
     private String email;
-    private String userType;
     private Date dob;
-    private Boolean locked;
-    private List<RoleDTO> roles;
+    private List<String> groups;
 
-    public UserDTO(User user) {
-        this.id = user.getId();
-        this.account = user.getAccount();
-        this.password = user.getPassword();
-        this.name = user.getName();
-        this.phone = user.getPhone();
-        this.email = user.getEmail();
-        this.userType = user.getUserType();
-        this.dob = user.getDob();
-        this.locked = user.isLocked();
-        this.roles = user.getRoles().stream().map(RoleDTO::new).collect(Collectors.toList());
+    public static UserDTO from(User user) {
+        return UserDTO.builder()
+                .id(user.getId())
+                .account(user.getAccount())
+                .name(user.getName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .dob(user.getDob())
+                .build();
+    }
+
+    public static UserDTO from(Customer user) {
+        return UserDTO.builder()
+                .id(user.getId())
+                .account(user.getAccount())
+                .name(user.getName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .dob(user.getDob())
+                .password(user.getPassword())
+                .groups(user.getGroups())
+                .build();
     }
 }

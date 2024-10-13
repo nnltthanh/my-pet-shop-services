@@ -92,7 +92,7 @@ public class Product {
     private long countSold;
 
     @Transient
-    private List<ProductDetail> productDetails = new ArrayList<>();
+    private List<ProductDetailDTO> productDetails = new ArrayList<>();
 
     @Transient
     public String getProductType() {

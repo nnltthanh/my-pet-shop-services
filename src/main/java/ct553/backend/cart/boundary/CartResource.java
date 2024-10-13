@@ -57,11 +57,9 @@ public class CartResource {
         return new ResponseEntity<>(this.cartService.getAllCartDetails(customerId), HttpStatus.OK);
     }
 
-    @PutMapping("/{cartDetailId}")
-    public ResponseEntity<?> updateCartDetail(@PathVariable Long cartDetailId,
-            @RequestBody CartDetail cartDetail) {
+    @PutMapping
+    public ResponseEntity<?> updateCartDetail(@RequestBody CartDetail cartDetail) {
         CartDetail updatedCartDetail = this.cartService.updateCartDetail(cartDetail);
-
         return new ResponseEntity<>(updatedCartDetail, HttpStatus.OK);
     }
 

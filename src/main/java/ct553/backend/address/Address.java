@@ -3,6 +3,7 @@ package ct553.backend.address;
 import org.springframework.stereotype.Component;
 
 import ct553.backend.customer.Customer;
+import ct553.backend.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -47,7 +48,7 @@ public class Address {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private User customer;
 
     @Column
     private Boolean isDefault = false;

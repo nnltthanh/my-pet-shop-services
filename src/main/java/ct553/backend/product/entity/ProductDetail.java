@@ -57,7 +57,7 @@ public class ProductDetail {
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     @NotNull(message = "Reference product is missing")
-    @JsonIgnore
+    // @JsonIgnore
     private Product product;
 
     @ManyToOne
@@ -79,6 +79,5 @@ public class ProductDetail {
     @Column(nullable = false)
     @Convert(converter = InventoryStatusConverter.class)
     private InventoryStatus inventoryStatus;
-
 
 }

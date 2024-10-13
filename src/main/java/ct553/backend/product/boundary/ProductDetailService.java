@@ -1,6 +1,7 @@
 package ct553.backend.product.boundary;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import ct553.backend.product.control.ProductDetailRepository;
 import ct553.backend.product.entity.InventoryStatus;
 import ct553.backend.product.entity.Product;
 import ct553.backend.product.entity.ProductDetail;
+import ct553.backend.product.entity.ProductDetailDTO;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -75,8 +77,11 @@ public class ProductDetailService {
         return (ArrayList<ProductDetail>) this.productDetailRepository.findAll();
     }
 
-    ArrayList<ProductDetail> getAllProductDetails(Long productId) {
-        return (ArrayList<ProductDetail>) this.productDetailRepository.findByProduct_Id(productId);
+    List<ProductDetailDTO> getAllProductDetails(Long productId) {
+        return this.productDetailRepository.findByProduct_Id(productId)
+                                                .stream()
+                                                .map(ProductDetailDTO::from)
+                                                .toList();
     }
 
     public ProductDetail findProductDetailById(Long id) {

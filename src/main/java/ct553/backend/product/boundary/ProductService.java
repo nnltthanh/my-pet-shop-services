@@ -59,7 +59,9 @@ public class ProductService {
 
             ((PetProduct)product).setLatestHealthRecord(latestHealthRecord);
         }
-        product.setProductDetails(this.productDetailService.getAllProductDetails(id));
+        if (product != null) {
+            product.setProductDetails(this.productDetailService.getAllProductDetails(id));
+        }
         return product;
     }
 

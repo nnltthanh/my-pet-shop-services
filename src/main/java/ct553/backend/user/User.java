@@ -1,8 +1,8 @@
 package ct553.backend.user;
 
 import java.util.Date;
-import java.util.List;
 
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.stereotype.Component;
@@ -10,29 +10,24 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import ct553.backend.imagedata.ImageData;
-import ct553.backend.role.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -45,6 +40,7 @@ import lombok.NoArgsConstructor;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @EntityListeners(AuditingEntityListener.class)
+@Builder
 public class User {
 
         @Id
@@ -54,8 +50,8 @@ public class User {
         @Column(length = 50, name = "account", unique = true, nullable = false)
         private String account;
 
-        @Column(columnDefinition = "TEXT")
-        private String password;
+        // @Column(columnDefinition = "TEXT")
+        // private String password;
 
         @Column
         private String name;
@@ -82,17 +78,24 @@ public class User {
 
         @Column(name = "updated_at")
         @Temporal(value = TemporalType.TIMESTAMP)
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+        @UpdateTimestamp
         private Date updatedAt;
 
-        @ManyToMany(fetch = FetchType.EAGER)
-        @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-        private List<Role> roles;
+        // @Transient
+        // public String getUserType() {
+        //         return this.getClass().getAnnotation(DiscriminatorValue.class).value();
+        // }
 
-        @Column(columnDefinition = "boolean default false")
-        private boolean locked;
-
-        @Transient
-        public String getUserType() {
-                return this.getClass().getAnnotation(DiscriminatorValue.class).value();
+        public static User from(UserDTO userDto) {
+                return User.builder()
+                        .id(userDto.getId())
+                        .account(userDto.getAccount())
+                        .name(userDto.getName())
+                        .phone(userDto.getPhone())
+                        .email(userDto.getEmail())
+                        .dob(userDto.getDob())
+                        .build();
         }
+
 }

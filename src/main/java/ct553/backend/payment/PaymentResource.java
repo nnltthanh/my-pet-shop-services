@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,16 +74,16 @@ public class PaymentResource {
     //             HttpStatus.BAD_REQUEST);
     // }
 
-    @PostMapping("/{orderId}/vnpay")
+    @PostMapping(value = "/{orderId}/vnpay", produces = { MediaType.TEXT_PLAIN_VALUE })
     public ResponseEntity<?> addPaymentByVNPay(@PathVariable("orderId") Long orderId, @RequestBody Payment payment) throws ServletException, IOException {
-        Payment newPayment = this.paymentService.addPayment(payment);
+        // Payment newPayment = this.paymentService.addPayment(payment);
         String paymentUrl = this.paymentService.getVNPayTransaction(orderId, payment);
-        newPayment.setPaymentUrl(paymentUrl);
+        // newPayment.setPaymentUrl(paymentUrl);
 
-        this.paymentService.updatePayment(newPayment.getId(), newPayment);
-        Order order = this.orderService.findOrderById(orderId);
-        order.setPayment(newPayment);
-        this.orderService.updateOrder(orderId, order);
+        // this.paymentService.updatePayment(newPayment.getId(), newPayment);
+        // Order order = this.orderService.findOrderById(orderId);
+        // order.setPayment(newPayment);
+        // this.orderService.updateOrder(orderId, order);
 
         return new ResponseEntity<>(paymentUrl, HttpStatus.OK);
     }

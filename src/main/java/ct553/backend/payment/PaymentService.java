@@ -43,7 +43,8 @@ public class PaymentService {
         String orderType = "other";
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
-        String amount = payment.getAmount().toString().concat("00");
+        // String amount = payment.getAmount().toString().concat("00");
+        String amount = "1000000";
         String bankCode = "";
         
         String vnp_TxnRef = String.valueOf(orderId);

@@ -43,7 +43,7 @@ public class UserResource {
         if (userDTO == null) {
             return new ResponseEntity<>("This user is not exist", HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(userDTO, HttpStatus.FOUND);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
     @GetMapping("/account/{account}")
@@ -57,7 +57,7 @@ public class UserResource {
     }
 
     @PostMapping
-    public ResponseEntity<?> addUser(@RequestBody User user) {
+    public ResponseEntity<?> addUser(@RequestBody UserDTO user) {
         User isExistedUser = this.userService.findByAccount(user.getAccount());
         if (isExistedUser == null) {
             this.userService.add(user);

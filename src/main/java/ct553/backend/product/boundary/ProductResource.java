@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import ct553.backend.auth.RoleName;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.imagedata.ImageDataService;
 import ct553.backend.imagedata.ImageDataType;
@@ -25,12 +27,14 @@ import ct553.backend.product.entity.Product;
 import ct553.backend.product.entity.ProductOverviewResponse;
 import ct553.backend.product.entity.ProductSearchingCriteria;
 import ct553.backend.product.entity.ProductSortingCriteria;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/products")
 @Slf4j
+@EnableMethodSecurity
 public class ProductResource {
 
     @Autowired
@@ -41,6 +45,7 @@ public class ProductResource {
 
     @GetMapping({ "/", "", "/search", "search" })
     @ResponseStatus(value = HttpStatus.OK)
+    // @RolesAllowed({ RoleName.ADMIN })
     public ProductOverviewResponse findAll(
             @RequestParam(value = "page", required = false, defaultValue = "0") int numberOfPage,
             @RequestParam(value = "pageSize", required = false, defaultValue = "1000000000") int pageSize,

@@ -1,7 +1,6 @@
 package ct553.backend.address;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,13 +24,11 @@ public class AddressService {
     }
 
     
-    public ArrayList<Address> findDefaultAddress(Long id) {
-        List<Address> defaultAddresses = this.findByCustomerId(id)
+    public Address findDefaultAddress(Long id) {
+        return this.findByCustomerId(id)
                     .stream()
                     .filter(a -> a.getIsDefault() == true)
-                    .toList();
-
-        return new ArrayList<>(defaultAddresses);
+                    .findFirst().orElse(null);
     }
 
     public void add(Address address) {
@@ -58,11 +55,10 @@ public class AddressService {
                 existingAddress.setIsDefault(address.getIsDefault());
             }
 
-            if (address.getIsDefault() && this.findDefaultAddress(id).size() >= 0) {
-                this.findDefaultAddress(id).forEach(a -> {
-                    a.setIsDefault(false);
-                    this.addressRepository.save(a);
-                });
+            if (address.getIsDefault() && this.findDefaultAddress(id) != null) {
+                Address defaultAddress = this.findDefaultAddress(id);
+                defaultAddress.setIsDefault(false);
+                this.addressRepository.save(defaultAddress);
 
                 existingAddress.setIsDefault(address.getIsDefault());
             }
