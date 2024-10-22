@@ -24,7 +24,7 @@ public class PetProductImporterResource {
     public ResponseEntity<?> importProduct(@RequestParam(name = "productType", required = false) String productType, 
     @RequestPart(value = "importFile", required = true) MultipartFile file) throws IOException {
         this.petProductImporterService.importProducts(file);
-        return new ResponseEntity<>("Import successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

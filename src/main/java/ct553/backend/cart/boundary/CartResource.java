@@ -28,7 +28,7 @@ public class CartResource {
              @RequestBody CartDetail cartDetail) {
         CartDetail cartDetailDB = this.cartService.addProductDetailToCart(customerId, cartDetail);
         if (cartDetailDB == null) {
-            return new ResponseEntity<>("This product does not have enough quantity", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(cartDetailDB, HttpStatus.CREATED);
     }
@@ -39,7 +39,7 @@ public class CartResource {
         if (cartDetails.size() > 0) {
             return new ResponseEntity<>(cartDetails, HttpStatus.OK);
         }
-        return new ResponseEntity<>("This cart is empty", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/{cartDetailId}")
@@ -48,13 +48,12 @@ public class CartResource {
         if (cartDetail != null) {
             return new ResponseEntity<>(cartDetail, HttpStatus.OK);
         }
-        return new ResponseEntity<>("This cart detail is not exist", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCartDetail(@PathVariable(value = "customerId") Long customerId, @PathVariable(value = "id") Long id) {
+    public void deleteCartDetail(@PathVariable(value = "customerId") Long customerId, @PathVariable(value = "id") Long id) {
         this.cartService.deleteCartDetail(id);
-        return new ResponseEntity<>(this.cartService.getAllCartDetails(customerId), HttpStatus.OK);
     }
 
     @PutMapping

@@ -32,7 +32,7 @@ public class PetCategoryResource {
     public ResponseEntity<?> getById(@PathVariable Long id) {
         PetCategory Pet = petCategoryService.findById(id);
         if (Pet == null) {
-            return new ResponseEntity<>("This pet category is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(Pet, HttpStatus.FOUND);
     }
@@ -47,10 +47,10 @@ public class PetCategoryResource {
     public ResponseEntity<String> deleteById(@PathVariable Long id) {
         PetCategory Pet = petCategoryService.findById(id);
         if (Pet == null) {
-            return new ResponseEntity<>("This pet category is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         this.petCategoryService.deleteById(id);
-        return new ResponseEntity<>("A pet category with id =" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

@@ -41,7 +41,7 @@ public class UserResource {
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         UserDTO userDTO = userService.findById(id);
         if (userDTO == null) {
-            return new ResponseEntity<>("This user is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
@@ -50,7 +50,7 @@ public class UserResource {
     public ResponseEntity<?> getUserById(@PathVariable String account) {
         User user = userService.findByAccount(account);
         if (user == null) {
-            return new ResponseEntity<>("This user is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(user, HttpStatus.OK);
@@ -63,25 +63,24 @@ public class UserResource {
             this.userService.add(user);
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         }
-        return new ResponseEntity<>("The user with account=" + user.getAccount() + " existed. Try again!",
-                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
         UserDTO userDTO = this.userService.findById(id);
         if (userDTO == null) {
-            return new ResponseEntity<>("This user is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         this.userService.deleteById(id);
-        return new ResponseEntity<>("A user with id=" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/loginEmployee")
     public ResponseEntity<?> loginCustomer(@RequestBody User user) {
         User existingUser = userService.findByAccount(user.getAccount());
         if (existingUser == null) {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(existingUser, HttpStatus.OK);
     }
@@ -90,14 +89,13 @@ public class UserResource {
     public ResponseEntity<?> updateStatusEmployee(@PathVariable Long id) {
         UserDTO userDTO = userService.findById(id);
         if (userDTO == null) {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
             if (this.userService.update(id, userDTO) != null) {
                 userDTO = userService.findById(id);
                 return new ResponseEntity<>(userDTO, HttpStatus.OK);
             }
-            return new ResponseEntity<>("Update failed",
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -112,7 +110,7 @@ public class UserResource {
         if (user != null)
             return new ResponseEntity<>(user, HttpStatus.OK);
 
-        return new ResponseEntity<>("Update failed", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
 }

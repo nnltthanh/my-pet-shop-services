@@ -37,7 +37,7 @@ public class AccessoryProductResource {
     public ResponseEntity<?> getAccessoryById(@PathVariable Long id) {
         AccessoryProduct Accessory = accessoryService.findById(id);
         if (Accessory == null) {
-            return new ResponseEntity<>("This Accessory is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(Accessory, HttpStatus.FOUND);
     }
@@ -52,10 +52,10 @@ public class AccessoryProductResource {
     public ResponseEntity<String> deleteById(@PathVariable Long id) {
         AccessoryProduct Accessory = accessoryService.findById(id);
         if (Accessory == null) {
-            return new ResponseEntity<>("This accessory is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         this.accessoryService.deleteById(id);
-        return new ResponseEntity<>("A accessory with id =" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

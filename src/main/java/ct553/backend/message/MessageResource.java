@@ -29,7 +29,7 @@ public class MessageResource {
     public ResponseEntity<?> getByConversation(@PathVariable Long id) {
         ArrayList<Message> Message = this.messageService.getAllMessagesByConversation(id);
         if (Message == null) {
-            return new ResponseEntity<>("This Message is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(Message, HttpStatus.OK);
     }
@@ -44,11 +44,11 @@ public class MessageResource {
     public ResponseEntity<String> deleteMessageById(@PathVariable Long id) {
         Message Message = this.messageService.findMessageById(id);
         if (Message == null) {
-            return new ResponseEntity<>("Can not find Message to delete", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         
         this.messageService.deleteMessageById(id);
-        return new ResponseEntity<>("Deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     
 }

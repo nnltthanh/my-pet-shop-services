@@ -23,7 +23,7 @@ public class PostResource {
     public ResponseEntity<?> getPostById(@PathVariable Long id) {
         Post post = this.postService.findPostById(id);
         if (post == null) {
-            return new ResponseEntity<>("This post is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
@@ -32,29 +32,24 @@ public class PostResource {
     public ResponseEntity<String> deletePostById(@PathVariable Long id) {
         Post post = this.postService.findPostById(id);
         if (post == null) {
-            return new ResponseEntity<>("This post is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         this.postService.deletePost(id);
-        return new ResponseEntity<>("A post with id=" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updatePostById(@PathVariable Long id, @RequestBody Post post) {
         if (this.postService.updatePost(id, post) != null) {
-            return new ResponseEntity<>("A post with id=" + id + " is updated successfully", HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>("The post with id=" + post.getId() + " fail updated. Try again!",
-                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping
-    public String addPost(@RequestBody Post post) {
-        post = postService.addPost(post);
-        if (post == null) {
-            return "Call add post function \n" + "Add post failed";
-        }
-        return "Call add post function \n" + post.toString();
+    public void addPost(@RequestBody Post post) {
+        postService.addPost(post);
     }
 
 }

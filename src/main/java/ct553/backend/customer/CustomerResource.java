@@ -30,7 +30,7 @@ public class CustomerResource {
     public ResponseEntity<?> getCustomerById(@PathVariable Long id) {
         Customer customer = customerService.findById(id);
         if (customer == null) {
-            return new ResponseEntity<>("This customer is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(customer, HttpStatus.FOUND);
     }
@@ -39,7 +39,7 @@ public class CustomerResource {
     public ResponseEntity<?> getCustomerAccount(@PathVariable String account) {
         Customer customer = customerService.findByAccount(account);
         if (customer == null) {
-            return new ResponseEntity<>("This customer is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(customer, HttpStatus.FOUND);
     }
@@ -47,25 +47,22 @@ public class CustomerResource {
     @PostMapping
     public ResponseEntity<?> addCustomer(@RequestBody Customer customer) {
         // Check if customer is exist or not?
-        // Customer isExistedCustomer = customerService.findById(customer.getId());
-        // if (isExistedCustomer == null) {
-        // this.customerService.add(customer);
-        // return new ResponseEntity<>(customer, HttpStatus.CREATED);
-        // }
-        // return new ResponseEntity<>("The customer with id=" + customer.getId() + "
-        // existed. Try again!", HttpStatus.BAD_REQUEST);
+        Customer isExistedCustomer = customerService.findById(customer.getId());
+        if (isExistedCustomer == null) {
         this.customerService.add(customer);
         return new ResponseEntity<>(customer, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCustomerById(@PathVariable Long id) {
         Customer customer = customerService.findById(id);
         if (customer == null) {
-            return new ResponseEntity<>("This customer is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         this.customerService.deleteById(id);
-        return new ResponseEntity<>("A customer with id=" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/register")
@@ -73,7 +70,7 @@ public class CustomerResource {
         // Check if customer exists in the database
         Customer existingCustomer = customerService.findByAccount(customer.getAccount());
         if (existingCustomer != null) {
-            return new ResponseEntity<>("Customer existed", HttpStatus.CONFLICT);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         this.customerService.add(customer);
         return new ResponseEntity<>(existingCustomer, HttpStatus.CREATED);
@@ -84,7 +81,7 @@ public class CustomerResource {
         // Check if customer exists in the database
         Customer existingCustomer = customerService.findByAccount(customer.getAccount());
         if (existingCustomer == null) {
-            return new ResponseEntity<>("Customer not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(existingCustomer, HttpStatus.OK);
     }
@@ -104,28 +101,26 @@ public class CustomerResource {
     public ResponseEntity<?> updateStatusCustomer(@PathVariable Long id) {
         Customer customer = customerService.findById(id);
         if (customer == null) {
-            return new ResponseEntity<>("Customer not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
             if (this.customerService.updateCustomer(id, customer) != null) {
                 customer = customerService.findById(id);
                 return new ResponseEntity<>(customer, HttpStatus.OK);
             }
-            return new ResponseEntity<>("Update failed",
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/{id}/updateInfo")
     public ResponseEntity<?> updateInfoCustomer(@PathVariable Long id, @RequestBody Customer customer) {
         if (customer == null) {
-            return new ResponseEntity<>("Customer not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
             if (this.customerService.updateCustomerInfo(id, customer) != null) {
                 customer = customerService.findById(id);
                 return new ResponseEntity<>(customer, HttpStatus.OK);
             }
-            return new ResponseEntity<>("Update failed",
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

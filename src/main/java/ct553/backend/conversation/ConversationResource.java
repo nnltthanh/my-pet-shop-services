@@ -29,7 +29,7 @@ public class ConversationResource {
     public ResponseEntity<?> getConversationById(@PathVariable Long id) {
         Conversation Conversation = this.conversationService.findConversationById(id);
         if (Conversation == null) {
-            return new ResponseEntity<>("This Conversation is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(Conversation, HttpStatus.OK);
     }
@@ -44,11 +44,11 @@ public class ConversationResource {
     public ResponseEntity<String> deleteConversationById(@PathVariable Long id) {
         Conversation Conversation = this.conversationService.findConversationById(id);
         if (Conversation == null) {
-            return new ResponseEntity<>("Can not find Conversation to delete", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         
         this.conversationService.deleteConversationById(id);
-        return new ResponseEntity<>("Deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     
 }

@@ -27,7 +27,7 @@ public class ShipmentResource {
     public ResponseEntity<?> getShipmentById(@PathVariable Long id) {
         Shipment shipment = this.shipmentService.findShipmentById(id);
         if (shipment == null) {
-            return new ResponseEntity<>("This shipment is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(shipment, HttpStatus.FOUND);
     }
@@ -36,20 +36,19 @@ public class ShipmentResource {
     public ResponseEntity<String> deleteShipmentById(@PathVariable Long id) {
         Shipment shipment = this.shipmentService.findShipmentById(id);
         if (shipment == null) {
-            return new ResponseEntity<>("This shipment is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         this.shipmentService.deleteShipment(id);
-        return new ResponseEntity<>("A shipment with id=" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateShipmentById(@PathVariable Long id, @RequestBody Shipment shipment) {
         if (this.shipmentService.updateShipment(id, shipment) != null) {
-            return new ResponseEntity<>("A shipment with id=" + id + " is updated successfully", HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>("The shipment with id=" + shipment.getId() + " fail updated. Try again!",
-                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/{orderId}")

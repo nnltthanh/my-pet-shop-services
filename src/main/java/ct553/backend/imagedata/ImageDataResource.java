@@ -30,7 +30,7 @@ public class ImageDataResource {
     public ResponseEntity<?> getImageDataById(@PathVariable Long id) {
         ImageData imageData = this.imageDataService.findById(id);
         if (imageData == null) {
-            return new ResponseEntity<>("This imageData is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(imageData, HttpStatus.OK);
     }
@@ -39,29 +39,24 @@ public class ImageDataResource {
     public ResponseEntity<String> deleteImageDataById(@PathVariable Long id) {
         ImageData imageData = this.imageDataService.findById(id);
         if (imageData == null) {
-            return new ResponseEntity<>("This imageData is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         this.imageDataService.delete(id);
-        return new ResponseEntity<>("An imageData with id=" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateImageDataById(@PathVariable Long id, @RequestBody ImageData imageData) {
         if (this.imageDataService.update(id, imageData) != null) {
-            return new ResponseEntity<>("An imageData with id=" + id + " is updated successfully", HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>("The imageData with id=" + imageData.getId() + " fail updated. Try again!",
-                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping
-    public String addImageData(@RequestBody ImageData imageData) {
-        imageData = imageDataService.addImageData(imageData);
-        if (imageData == null) {
-            return "Call add imageData function \n" + "Add imageData failed";
-        }
-        return "Call add imageData function \n" + imageData.toString();
+    public void addImageData(@RequestBody ImageData imageData) {
+        imageDataService.addImageData(imageData);
     }
 
 }

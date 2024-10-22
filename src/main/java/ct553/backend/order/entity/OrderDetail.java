@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import ct553.backend.cart.entity.CartDetail;
 import ct553.backend.product.entity.ProductDetail;
 import jakarta.persistence.Column;
@@ -40,7 +42,7 @@ public class OrderDetail {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
-    // @JsonIgnore
+    @JsonIgnore
     private Order order;
 
     @ManyToOne

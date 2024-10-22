@@ -1,13 +1,13 @@
-package ct553.backend.order;
+package ct553.backend.order.entity;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public enum OrderStatus {
-    CREATING,
-    PENDING_PAYMENT,
-    PROCESSING,
-    SHIPPED,
+    CREATED,
+    PAYMENT,
+    STAFF_PROCESSING,
+    SHIPPING,
     DELIVERED,
     CANCELLED,
     REFUNDED,

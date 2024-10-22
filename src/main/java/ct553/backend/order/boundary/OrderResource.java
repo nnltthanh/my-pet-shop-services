@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ct553.backend.order.entity.Order;
+import ct553.backend.order.entity.OrderCreationRequest;
 import ct553.backend.order.entity.OrderDetail;
 
 @RestController
@@ -39,20 +41,20 @@ public class OrderResource {
     }
 
     @PostMapping
-    public ResponseEntity<Order> addOrder(@PathVariable Long customerId, @RequestBody Order order) {
-        this.orderService.addOrder(customerId, order);
-        return new ResponseEntity<>(order, HttpStatus.CREATED);
+    public ResponseEntity<Order> addOrder(@PathVariable Long customerId, @RequestBody OrderCreationRequest order) {
+        Order savedOrder = this.orderService.addOrder(customerId, order);
+        return new ResponseEntity<>(savedOrder, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrderById(@PathVariable Long id) {
         Order order = this.orderService.findOrderById(id);
         if (order == null) {
-            return new ResponseEntity<>("Can not find order to cancel", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         this.orderService.cancelOrder(id);
-        return new ResponseEntity<>("Canceled successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // @PostMapping("/{orderId}")
@@ -62,14 +64,13 @@ public class OrderResource {
     //             HttpStatus.CREATED);
     // }
 
-    // @PutMapping("/{orderId}")
-    // public ResponseEntity<?> updateOrder(@PathVariable Long orderId, @RequestBody Order order) {
-    //     System.out.println("New order detail: " + order);
-    //     if (this.orderService.findOrderById(orderId) == null) {
-    //         return new ResponseEntity<>("Not found Order", HttpStatus.NOT_FOUND);
+    @PutMapping("/{orderId}")
+    public ResponseEntity<?> updateOrder(@PathVariable Long orderId, @RequestBody Order order) {
+        if (this.orderService.findOrderById(orderId) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-    //     }
-    //     return new ResponseEntity<>(this.orderService.updateOrder(orderId, order), HttpStatus.OK);
-    // }
+        }
+        return new ResponseEntity<>(this.orderService.updateOrder(orderId, order), HttpStatus.OK);
+    }
 
 }

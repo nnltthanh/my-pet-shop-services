@@ -23,7 +23,7 @@ public class EmployeeResource {
     public ResponseEntity<?> getStaffById(@PathVariable Long id) {
         Employee staff = employeeService.findById(id);
         if (staff == null) {
-            return new ResponseEntity<>("This staff is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(staff, HttpStatus.FOUND);
     }
@@ -31,25 +31,23 @@ public class EmployeeResource {
     @PostMapping
     public ResponseEntity<?> addStaff(@RequestBody Employee staff) {
         // Check if customer exist or not?
-        // Staff isExistedStaff = staffService.findById(staff.getId());
-        // if (isExistedStaff == null) {
-        // this.staffService.add(staff);
-        // return new ResponseEntity<>(staff, HttpStatus.CREATED);
-        // }
-        // return new ResponseEntity<>("The staff with id=" + staff.getId() + " existed.
-        // Try again!", HttpStatus.BAD_REQUEST);
+        Employee isExistedStaff = employeeService.findById(staff.getId());
+        if (isExistedStaff == null) {
         this.employeeService.add(staff);
         return new ResponseEntity<>(staff, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+     
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteStaffById(@PathVariable Long id) {
         Employee staff = employeeService.findById(id);
         if (staff == null) {
-            return new ResponseEntity<>("This staff is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         this.employeeService.deleteById(id);
-        return new ResponseEntity<>("A staff with id=" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

@@ -46,6 +46,9 @@ public class Address {
     @Column
     private String wardId;
 
+    @Column
+    private String displayingAddress;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private User customer;

@@ -32,7 +32,7 @@ public class AccessorySubCategoryResource {
     public ResponseEntity<?> getById(@PathVariable Long id) {
         AccessorySubCategory accessory = accessoryCategoryService.findById(id);
         if (accessory == null) {
-            return new ResponseEntity<>("This accessory category is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(accessory, HttpStatus.FOUND);
     }
@@ -47,10 +47,10 @@ public class AccessorySubCategoryResource {
     public ResponseEntity<String> deleteById(@PathVariable Long id) {
         AccessorySubCategory accessory = accessoryCategoryService.findById(id);
         if (accessory == null) {
-            return new ResponseEntity<>("This accessory category is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         this.accessoryCategoryService.deleteById(id);
-        return new ResponseEntity<>("A accessory category with id =" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

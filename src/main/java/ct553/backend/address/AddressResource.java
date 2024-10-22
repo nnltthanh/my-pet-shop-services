@@ -31,7 +31,7 @@ public class AddressResource {
     public ResponseEntity<?> getAddressById(@PathVariable Long id) {
         Address address = addressService.findById(id);
         if (address == null) {
-            return new ResponseEntity<>("This address is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(address, HttpStatus.OK);
     }
@@ -57,10 +57,10 @@ public class AddressResource {
     public ResponseEntity<String> deleteAddressById(@PathVariable Long id) {
         Address address = addressService.findById(id);
         if (address == null) {
-            return new ResponseEntity<>("This address is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         this.addressService.deleteById(id);
-        return new ResponseEntity<>("A address with id=" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/customer/{id}")

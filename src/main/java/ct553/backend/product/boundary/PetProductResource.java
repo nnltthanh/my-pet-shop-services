@@ -51,7 +51,7 @@ public class PetProductResource {
     public ResponseEntity<?> getPetById(@PathVariable Long id) {
         PetProduct Pet = petService.findById(id);
         if (Pet == null) {
-            return new ResponseEntity<>("This Pet is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(Pet, HttpStatus.FOUND);
     }
@@ -68,7 +68,7 @@ public class PetProductResource {
                             @RequestPart(value = "image", required = false) MultipartFile multipartFile) throws IOException {
         PetProduct existingProduct = this.petService.findById(id);
         if (existingProduct == null) {
-            return new ResponseEntity<>("Can not find product to update", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         PetProduct updatedProduct = this.petService.updateProduct(id, updatedProductInfo, multipartFile);
@@ -79,10 +79,10 @@ public class PetProductResource {
     public ResponseEntity<String> deleteById(@PathVariable Long id) {
         PetProduct Pet = petService.findById(id);
         if (Pet == null) {
-            return new ResponseEntity<>("This pet is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         this.petService.deleteById(id);
-        return new ResponseEntity<>("A pet with id =" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

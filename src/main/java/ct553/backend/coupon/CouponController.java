@@ -23,7 +23,7 @@ public class CouponController {
     public ResponseEntity<?> getCouponById(@PathVariable Long id) {
         Coupon coupon = couponService.findById(id);
         if (coupon == null) {
-            return new ResponseEntity<>("This coupon is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(coupon, HttpStatus.FOUND);
     }
@@ -36,16 +36,16 @@ public class CouponController {
             this.couponService.add(coupon);
             return new ResponseEntity<>(coupon, HttpStatus.CREATED);
         }
-        return new ResponseEntity<>("The coupon with id=" + coupon.getId() + " existed. Try again!", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCouponById(@PathVariable Long id) {
         Coupon coupon = couponService.findById(id);
         if (coupon == null) {
-            return new ResponseEntity<>("This coupon is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         this.couponService.deleteById(id);
-        return new ResponseEntity<>("A coupon with id=" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

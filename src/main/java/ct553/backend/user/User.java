@@ -87,6 +87,10 @@ public class User {
         //         return this.getClass().getAnnotation(DiscriminatorValue.class).value();
         // }
 
+        public User(Long id) {
+                this.id = id;
+        }
+
         public static User from(UserDTO userDto) {
                 return User.builder()
                         .id(userDto.getId())

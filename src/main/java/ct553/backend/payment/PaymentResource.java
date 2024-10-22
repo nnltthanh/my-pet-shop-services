@@ -38,7 +38,7 @@ public class PaymentResource {
     public ResponseEntity<?> getPaymentById(@PathVariable Long id) {
         Payment payment = this.paymentService.findPaymentById(id);
         if (payment == null) {
-            return new ResponseEntity<>("This payment is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(payment, HttpStatus.FOUND);
     }
@@ -47,20 +47,19 @@ public class PaymentResource {
     public ResponseEntity<String> deletePaymentById(@PathVariable Long id) {
         Payment payment = this.paymentService.findPaymentById(id);
         if (payment == null) {
-            return new ResponseEntity<>("This payment is not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         this.paymentService.deletePayment(id);
-        return new ResponseEntity<>("A payment with id=" + id + " is deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updatePaymentById(@PathVariable Long id, @RequestBody Payment payment) {
         if (this.paymentService.updatePayment(id, payment) != null) {
-            return new ResponseEntity<>("A payment with id=" + id + " is updated successfully", HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>("The payment with id=" + payment.getId() + " fail updated. Try again!",
-                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     // @PostMapping("/")

@@ -1,8 +1,8 @@
 package ct553.backend.order.boundary;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,9 @@ import ct553.backend.customer.CustomerService;
 import ct553.backend.order.control.OrderDetailRepository;
 import ct553.backend.order.control.OrderRepository;
 import ct553.backend.order.entity.Order;
+import ct553.backend.order.entity.OrderCreationRequest;
 import ct553.backend.order.entity.OrderDetail;
+import ct553.backend.order.entity.OrderStatus;
 import ct553.backend.product.boundary.ProductDetailService;
 import ct553.backend.product.entity.InventoryStatus;
 import ct553.backend.product.entity.ProductDetail;
@@ -37,6 +39,20 @@ public class OrderService {
 
     @Autowired
     private ProductDetailService productDetailService;
+
+    Order addOrder(Long customerId, OrderCreationRequest orderRequest) {
+        Customer customer = this.customerService.findById(customerId);
+        if (customer == null) {
+            throw new IllegalArgumentException("Customer not exist");
+        }
+        Customer basicCustomer = new Customer();
+        basicCustomer.setId(customerId);
+        Order order = Order.from(orderRequest, customer);
+        System.out.println(customer.getId());
+        this.orderRepository.save(order);
+        this.addOrderDetailsToOrder(order.getId(), orderRequest.getCartDetails());
+        return order;
+    }
 
     void addOrder(Long customerId, Order order) {
         Customer customer = this.customerService.findById(customerId);
@@ -65,9 +81,9 @@ public class OrderService {
         this.orderRepository.deleteById(orderId);
     }
 
-    ArrayList<OrderDetail> addOrderDetailsToOrder(Long orderId, Long[] cartDetailsIdList) {
+    ArrayList<OrderDetail> addOrderDetailsToOrder(Long orderId, List<Long> cartDetailsIdList) {
 
-        Arrays.stream(cartDetailsIdList).forEach(id -> {
+        cartDetailsIdList.stream().forEach(id -> {
             OrderDetail orderDetail = new OrderDetail(this.cartService.findCartDetailById(id));
             orderDetail.setOrder(this.findOrderById(orderId));
             this.cartService.deleteCartDetail(id);
@@ -95,7 +111,7 @@ public class OrderService {
     public Order updateOrder(Long orderId, Order order) {
         Order orderDB = this.findOrderById(orderId);
 
-        orderDB.setOrderDetails(order.getOrderDetails());
+        // orderDB.setOrderDetails(order.getOrderDetails());
         orderDB.setStatus(order.getStatus());
         // orderDB.setCoupon(order.getCoupon());
         // if (order.getStaff() != null) {
@@ -104,12 +120,11 @@ public class OrderService {
         if (order.getPayment() != null) {
             orderDB.setPayment(order.getPayment());
         }
-        if (order.getShipment() != null) {
-            orderDB.setShipment(order.getShipment());
-        }
-        orderDB.setTotal(order.getTotal());
+        // if (order.getShipment() != null) {
+        //     orderDB.setShipment(order.getShipment());
+        // }
+        // orderDB.setTotal(order.getTotal());
 
-        System.out.println("New order detail saved in DB: " + orderDB);
         return this.orderRepository.save(orderDB);
     }
 }

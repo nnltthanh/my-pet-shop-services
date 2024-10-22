@@ -13,9 +13,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ct553.backend.customer.Customer;
-import ct553.backend.order.OrderStatus;
 import ct553.backend.payment.Payment;
 import ct553.backend.shipment.Shipment;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -30,6 +30,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -39,6 +40,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "customer_order")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class Order {
 
@@ -66,11 +68,11 @@ public class Order {
     // @JoinColumn(name = "staff_id")
     // private Staff staff;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "shipment_id")
     private Shipment shipment;
 
@@ -87,7 +89,18 @@ public class Order {
     private String note;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
-    @JsonIgnore
+    // @JsonIgnore
     private List<OrderDetail> orderDetails = new ArrayList<>();
+
+    public static Order from(OrderCreationRequest request, Customer customer) {
+        return Order.builder()
+                .customer(customer)
+                .total(request.getTotal())
+                .payment(request.getPayment())
+                .shipment(request.getShipment())
+                .status(request.getStatus())
+                .note(request.getNote())
+                .build();
+    }
 
 }
