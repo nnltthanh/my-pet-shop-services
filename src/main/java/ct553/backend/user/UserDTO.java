@@ -20,10 +20,16 @@ public class UserDTO {
     private String name;
     private String phone;
     private String email;
+    private String avatarUrl;
     private Date dob;
+    private boolean isBlocked;
+    private String blockedByUser;
     private List<String> groups;
 
     public static UserDTO from(User user) {
+        if (user == null) {
+            return null;
+        }
         return UserDTO.builder()
                 .id(user.getId())
                 .account(user.getAccount())
@@ -31,10 +37,15 @@ public class UserDTO {
                 .phone(user.getPhone())
                 .email(user.getEmail())
                 .dob(user.getDob())
+                .isBlocked(user.getValidTo() == null ? false : true)
+                .avatarUrl(user.getAvatar() == null ? null : user.getAvatar().getImageUrls())
                 .build();
     }
 
     public static UserDTO from(Customer user) {
+        if (user == null) {
+            return null;
+        }
         return UserDTO.builder()
                 .id(user.getId())
                 .account(user.getAccount())
@@ -44,6 +55,8 @@ public class UserDTO {
                 .dob(user.getDob())
                 .password(user.getPassword())
                 .groups(user.getGroups())
+                .isBlocked(user.getValidTo() == null ? false : true)
+                .avatarUrl(user.getAvatar() == null ? null : user.getAvatar().getImageUrls())
                 .build();
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import ct553.backend.imagedata.ImageData;
+import ct553.backend.product.entity.PetProduct;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
@@ -30,6 +31,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 @Component
 @Entity
@@ -41,6 +43,7 @@ import lombok.NoArgsConstructor;
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @EntityListeners(AuditingEntityListener.class)
 @Builder
+@FieldNameConstants
 public class User {
 
         @Id
@@ -82,6 +85,14 @@ public class User {
         @UpdateTimestamp
         private Date updatedAt;
 
+        @Column(name = "valid_to")
+        @Temporal(value = TemporalType.TIMESTAMP)
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+        private Date validTo;
+
+        @Column(name = "modification_user_id")
+        private Long modificationUserId;
+
         // @Transient
         // public String getUserType() {
         //         return this.getClass().getAnnotation(DiscriminatorValue.class).value();
@@ -89,6 +100,18 @@ public class User {
 
         public User(Long id) {
                 this.id = id;
+        }
+
+        public User(User user) {
+                this.id = user.getId();
+                this.account = user.getAccount();
+                this.email = user.getEmail();
+                this.phone = user.getPhone();
+                this.name = user.getName();
+                this.dob = user.getDob();
+                this.validTo = user.getValidTo();
+                this.avatar = user.getAvatar();
+                this.createdAt = user.getCreatedAt();
         }
 
         public static User from(UserDTO userDto) {
@@ -101,5 +124,6 @@ public class User {
                         .dob(userDto.getDob())
                         .build();
         }
+        
 
 }

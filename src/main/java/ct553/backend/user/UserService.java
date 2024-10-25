@@ -1,18 +1,28 @@
 package ct553.backend.user;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import ct553.backend.CloudinaryService;
 import ct553.backend.auth.RoleName;
 import ct553.backend.auth.UserKeycloakSerivce;
+import ct553.backend.customer.Customer;
+import ct553.backend.customer.CustomerService;
+import ct553.backend.employee.Employee;
+import ct553.backend.employee.EmployeeService;
 import ct553.backend.imagedata.ImageData;
+import ct553.backend.imagedata.ImageDataType;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -24,6 +34,15 @@ public class UserService {
 
     @Autowired
     UserKeycloakSerivce userKeycloakSerivce;
+
+    @Autowired
+    CustomerService customerService;
+
+    @Autowired
+    EmployeeService employeeService;
+
+    @Autowired
+    CloudinaryService cloudinaryService;
 
     public List<UserDTO> findAll() {
         List<User> users = this.userRepository.findAll();
@@ -42,20 +61,31 @@ public class UserService {
         return UserDTO.from(user);
     }
 
-    public User getLoggedInUser() {
+    public UserDTO getLoggedInUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return this.findByAccount(auth.getName());
     }
 
-    public User findByAccount(String account) {
-        return this.userRepository.findUserByAccount(account).orElse(null);
+    public UserDTO findByAccount(String account) {
+        return UserDTO.from(this.userRepository.findUserByAccount(account).orElse(null));
     }
 
     @Transactional
-    public void add(UserDTO user) {
+    public void add(UserDTO user, MultipartFile avatar) throws IOException {
         if (user.getId() == null || this.findById(user.getId()) == null) {
             // this.userKeycloakSerivce.createUser(user);
-            this.userRepository.save(User.from(user));
+            User beSavedUser = User.from(user);
+            if (avatar != null) {
+                String imageUrl = this.cloudinaryService.uploadFile(avatar);
+                ImageData imageData = new ImageData(null, imageUrl, ImageDataType.AVATAR);
+                beSavedUser.setAvatar(imageData);
+            }
+
+            if (user.getGroups().indexOf("Khách hàng") != -1) {
+                this.customerService.add(new Customer(beSavedUser));
+            } else {
+                this.employeeService.add(new Employee(beSavedUser));
+            }
         }
     }
 
@@ -64,28 +94,60 @@ public class UserService {
     }
 
     @Transactional
-    public User update(Long id, UserDTO userDTO) {
+    public UserDTO update(Long id, UserDTO userDTO, MultipartFile avatar) throws IOException {
         User existingUser = userRepository.findById(id).orElse(null);
         if (existingUser != null) {
-            // existingUser.setLocked(!existingUser.isLocked()); // TODO
             existingUser.setDob(userDTO.getDob());
             existingUser.setEmail(userDTO.getEmail());
             existingUser.setName(userDTO.getName());
             existingUser.setPhone(userDTO.getPhone());
             this.userRepository.save(existingUser);
-            return existingUser;
+
+            if (avatar != null) {
+                String imageUrl = this.cloudinaryService.uploadFile(avatar);
+                ImageData imageData = new ImageData(null, imageUrl, ImageDataType.AVATAR);
+                existingUser.setAvatar(imageData);
+            }
+
+            return UserDTO.from(existingUser);
         }
         return null;
     }
 
-    public User updateAvatar(Long id, ImageData avatar) {
-        User existUser = this.userRepository.findById(id).orElse(null);
-        if (existUser != null) {
-            existUser.setAvatar(avatar);
-            this.userRepository.save(existUser);
-            return existUser;
+    public UserDTO updatePartially(Long id, String field, String value) {
+        User user = this.userRepository.findById(id).orElse(null);
+
+        if (user == null) {
+            return null;
         }
-        return null;
+
+        switch (field) {
+            case User.Fields.account:
+                user.setAccount(value);
+                break;
+            case User.Fields.name:
+                user.setAccount(value);
+                break;
+            case User.Fields.email:
+                user.setAccount(value);
+                break;
+            case User.Fields.phone:
+                user.setAccount(value);
+                break;
+            case User.Fields.validTo:
+                if (StringUtils.isNotEmpty(value)) {
+                    System.out.println("blocked");
+                    user.setValidTo(new Date()); // blocked
+                } else {
+                    System.out.println("unblocked");
+                    user.setValidTo(null); // unblocked
+                }
+            default:
+                break;
+        }
+
+        return UserDTO.from(this.userRepository.save(user));
+
     }
 
     public UserDTO mapUserGroups(UserDTO userDTO) {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import ct553.backend.auth.UserKeycloakSerivce;
 import ct553.backend.user.UserDTO;
@@ -32,7 +33,12 @@ public class CustomerService {
     }
 
     public void add(Customer customer) {
-        this.userKeycloakSerivce.createUser(UserDTO.from(customer));
+        // this.userKeycloakSerivce.createUser(UserDTO.from(customer));
+        this.customerRepository.save(customer);
+    }
+
+    public void add(Customer customer, MultipartFile avatar) {
+        // this.userKeycloakSerivce.createUser(UserDTO.from(customer));
         this.customerRepository.save(customer);
     }
 

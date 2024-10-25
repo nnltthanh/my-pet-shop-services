@@ -9,7 +9,9 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ct553.backend.address.Address;
+import ct553.backend.imagedata.ImageData;
 import ct553.backend.user.User;
+import ct553.backend.user.UserDTO;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -17,14 +19,19 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Component
 @Entity
 @DiscriminatorValue("customer")
 @EntityListeners(AuditingEntityListener.class)
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Customer extends User {
 
@@ -37,5 +44,9 @@ public class Customer extends User {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Address> addresses = new ArrayList<>();
+
+    public Customer(User user) {
+        super(user);
+    }
 
 }

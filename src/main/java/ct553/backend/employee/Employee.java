@@ -26,4 +26,8 @@ public class Employee extends User {
     @Column(name = "emp_code", unique = true)
     private Long code;
 
+    public Employee(User user) {
+        super(user);
+    }
+
 }

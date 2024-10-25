@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,13 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import ct553.backend.CloudinaryService;
-import ct553.backend.imagedata.ImageData;
-import ct553.backend.imagedata.ImageDataType;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,8 +26,6 @@ public class UserResource {
 
     @Autowired
     UserService userService;
-
-    private final CloudinaryService cloudinaryService;
 
     @GetMapping
     public List<UserDTO> getAllUsers() {
@@ -48,7 +43,7 @@ public class UserResource {
 
     @GetMapping("/account/{account}")
     public ResponseEntity<?> getUserById(@PathVariable String account) {
-        User user = userService.findByAccount(account);
+        UserDTO user = userService.findByAccount(account);
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -56,11 +51,12 @@ public class UserResource {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<?> addUser(@RequestBody UserDTO user) {
-        User isExistedUser = this.userService.findByAccount(user.getAccount());
+    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<?> addUser(@RequestPart(value = "user") UserDTO user,
+                        @RequestPart(value = "avatar", required = false) MultipartFile avatar) throws IOException {
+        UserDTO isExistedUser = this.userService.findByAccount(user.getAccount());
         if (isExistedUser == null) {
-            this.userService.add(user);
+            this.userService.add(user, avatar);
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -78,45 +74,26 @@ public class UserResource {
 
     @PostMapping("/loginEmployee")
     public ResponseEntity<?> loginCustomer(@RequestBody User user) {
-        User existingUser = userService.findByAccount(user.getAccount());
+        UserDTO existingUser = userService.findByAccount(user.getAccount());
         if (existingUser == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(existingUser, HttpStatus.OK);
     }
 
-    // @PutMapping("/{id}/updateLockedStatus")
-    // public ResponseEntity<?> updateStatusEmployee(@PathVariable Long id) {
-    // UserDTO userDTO = userService.findById(id);
-    // if (userDTO == null) {
-    // return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    // } else {
-    // if (this.userService.update(id, userDTO) != null) {
-    // userDTO = userService.findById(id);
-    // return new ResponseEntity<>(userDTO, HttpStatus.OK);
-    // }
-    // return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    // }
-    // }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateAvatar(@PathVariable Long id, @RequestParam("image") MultipartFile image)
-            throws IOException {
-        String imageURL = cloudinaryService.uploadFile(image);
-        ImageData avatar = new ImageData();
-        avatar.setImageUrls(imageURL);
-        avatar.setType(ImageDataType.AVATAR);
-        User user = this.userService.updateAvatar(id, avatar);
-
+    @PutMapping(value = "basic-info/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<?> update(@PathVariable Long id, 
+                @RequestPart(value = "user") UserDTO userDTO,
+                @RequestPart(value = "avatar", required = false) MultipartFile avatar) throws IOException {
+        UserDTO user = this.userService.update(id, userDTO, avatar);
         if (user != null)
             return new ResponseEntity<>(user, HttpStatus.OK);
-
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @PutMapping("basic-info/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        User user = this.userService.update(id, userDTO);
+    @PutMapping("{id}/fields/{field}")
+    public ResponseEntity<?> updatePartially(@PathVariable Long id, @PathVariable String field, @RequestBody(required = false) String value) {
+        UserDTO user = this.userService.updatePartially(id, field, value);
         if (user != null)
             return new ResponseEntity<>(user, HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
