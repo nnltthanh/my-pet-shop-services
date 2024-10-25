@@ -99,4 +99,8 @@ public class ProductDetailService {
         return this.productDetailRepository.save(detail);
     }
 
+    public long countSoldByProductId(Long productId) {
+        return this.productDetailRepository.countSoldByProduct_Id(productId);
+    }
+
 }

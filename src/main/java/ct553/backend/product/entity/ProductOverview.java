@@ -31,6 +31,12 @@ public class ProductOverview {
 
     private String productType;
 
+    private long countRating;
+
+    private double rating;
+
+    private long countSold;
+
     public static ProductOverview fromProduct(Product product) {
         return ProductOverview.builder()
                 .id(product.getId())
@@ -41,6 +47,9 @@ public class ProductOverview {
                 .imageData(product.getImageData())
                 .updatedAt(product.getUpdatedAt())
                 .productType("pet_product")
+                .countRating(product.getCountRating())
+                .rating(product.getRating())
+                .countSold(product.getCountSold())
                 .build();
     }
 
@@ -54,6 +63,9 @@ public class ProductOverview {
                 .imageData(product.getImageData())
                 .updatedAt(product.getUpdatedAt())
                 .productType(product.getCategory().getBreed().getValue())
+                .countRating(product.getCountRating())
+                .rating(product.getRating())
+                .countSold(product.getCountSold())
                 .build();
     }
 

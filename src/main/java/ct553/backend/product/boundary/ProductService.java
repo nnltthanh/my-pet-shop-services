@@ -2,10 +2,12 @@ package ct553.backend.product.boundary;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,7 +48,10 @@ public class ProductService {
         Page<Product> products = productRepository.findAllBy(
                 searchingCriteria,
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)));
-        List<Product> data = new ArrayList<>(products.stream().toList());
+        List<Product> data = new ArrayList<>(products.stream().map(p -> {
+            p.setCountSold(this.productDetailService.countSoldByProductId(p.getId()));
+            return p;
+        }).toList());
 
         return ProductOverviewResponse.fromProducts(products.getTotalElements(), data);
     }
@@ -54,10 +59,10 @@ public class ProductService {
     public Product findProductById(Long id) {
         Product product = this.productRepository.findById(id).orElse(null);
         if (product instanceof PetProduct) {
-            HealthRecord latestHealthRecord = ((PetProduct)product).getHealthRecord().stream()
-                        .sorted(Comparator.comparing(HealthRecord::getCreatedAt).reversed()).toList().get(0);
+            HealthRecord latestHealthRecord = ((PetProduct) product).getHealthRecord().stream()
+                    .sorted(Comparator.comparing(HealthRecord::getCreatedAt).reversed()).toList().get(0);
 
-            ((PetProduct)product).setLatestHealthRecord(latestHealthRecord);
+            ((PetProduct) product).setLatestHealthRecord(latestHealthRecord);
         }
         if (product != null) {
             product.setProductDetails(this.productDetailService.getAllProductDetails(id));
@@ -97,7 +102,12 @@ public class ProductService {
     }
 
     void deleteProductById(Long id) {
-        this.productRepository.deleteById(id);
+        Optional<Product> product = this.productRepository.findById(id);
+        if (product.isPresent()) {
+            Product productDB = product.get();
+            productDB.setValidTo(new Date());
+            this.productRepository.save(productDB);
+        }
     }
 
     // public ArrayList<Product> findTop5MostSale() {

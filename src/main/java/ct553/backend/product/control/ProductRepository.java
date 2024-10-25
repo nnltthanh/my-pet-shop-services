@@ -14,15 +14,40 @@ import ct553.backend.product.entity.ProductSearchingCriteria;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query(value = """
-            SELECT product FROM Product product WHERE
-            (product.id IN 
-                (SELECT pet.id FROM PetProduct pet WHERE pet.category.breed IN (:#{#criteria.breeds})) 
-                AND product.price BETWEEN :#{#criteria.priceFrom} AND :#{#criteria.priceTo})
-            OR 
-            (product.id IN 
-                (SELECT accessory.id FROM AccessoryProduct accessory WHERE accessory.subCategory.category IN (:#{#criteria.accessoryCategories})) 
-                AND product.price BETWEEN :#{#criteria.priceFrom} AND :#{#criteria.priceTo})
-        """)
+        SELECT new ct553.backend.product.entity.Product(
+        product,
+        CASE 
+            WHEN COUNT(detail.inventoryStatus) FILTER (WHERE detail.inventoryStatus = ct553.backend.product.entity.InventoryStatus.ON_HAND) > 0 THEN ct553.backend.product.entity.InventoryStatus.ON_HAND
+            WHEN COUNT(detail.inventoryStatus) FILTER (WHERE detail.inventoryStatus = ct553.backend.product.entity.InventoryStatus.INCOMING) > 0 THEN ct553.backend.product.entity.InventoryStatus.INCOMING
+            ELSE ct553.backend.product.entity.InventoryStatus.SOLD_OUT
+        END,
+        SUM(COALESCE(detail.sold, 0)),
+        AVG(COALESCE(review.rate, 0)),
+        COUNT(review.id)
+    ) 
+    FROM Product product
+    LEFT JOIN ProductDetail detail ON product.id = detail.product.id
+    LEFT JOIN Review review ON product.id = review.orderDetail.productDetail.product.id
+    WHERE 
+        (
+            product.id IN (
+                SELECT pet.id FROM PetProduct pet 
+                WHERE pet.category.breed IN (:#{#criteria.breeds})
+            )
+            AND product.price BETWEEN :#{#criteria.priceFrom} AND :#{#criteria.priceTo}
+            AND product.validTo IS NULL
+        )
+        OR
+        (
+            product.id IN (
+                SELECT accessory.id FROM AccessoryProduct accessory 
+                WHERE accessory.subCategory.category IN (:#{#criteria.accessoryCategories})
+            )
+            AND product.price BETWEEN :#{#criteria.priceFrom} AND :#{#criteria.priceTo}
+            AND product.validTo IS NULL
+        )
+    GROUP BY product
+    """)
     Page<Product> findAllBy(@Param("criteria") ProductSearchingCriteria searchingCriteria, Pageable pageable);
 
 }

@@ -45,7 +45,7 @@ public class PetProduct extends Product {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
-    @NotNull(message = "Category is missing")
+    // @NotNull(message = "Category is missing")
     private PetCategory category;
 
     @Enumerated(value = EnumType.STRING)
@@ -61,7 +61,8 @@ public class PetProduct extends Product {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
     private LocalDate dateOfBirth;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "petProduct", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "petProduct", fetch = FetchType.LAZY, orphanRemoval = true)
+    // @OneToMany
     private List<HealthRecord> healthRecord = new ArrayList<>();
 
     @Transient
@@ -85,6 +86,18 @@ public class PetProduct extends Product {
 
     public PetProduct(PetProduct petProduct, InventoryStatus inventoryStatus, long countSold) {
         super(petProduct, inventoryStatus, countSold);
+        this.quantity = petProduct.quantity;
+        this.category = petProduct.category;
+        this.gender = petProduct.gender;
+        this.color = petProduct.color;
+        this.origin = petProduct.origin;
+        this.dateOfBirth = petProduct.dateOfBirth;
+        this.healthRecord = new ArrayList<>(petProduct.healthRecord);
+        this.latestHealthRecord = petProduct.latestHealthRecord;
+    }
+
+    public PetProduct(PetProduct petProduct, InventoryStatus inventoryStatus, long countSold, double rating, long countRating) {
+        super(petProduct, inventoryStatus, countSold, rating, countRating);
         this.quantity = petProduct.quantity;
         this.category = petProduct.category;
         this.gender = petProduct.gender;

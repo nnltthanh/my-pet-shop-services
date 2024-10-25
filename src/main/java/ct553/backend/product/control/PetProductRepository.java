@@ -13,21 +13,26 @@ import ct553.backend.product.entity.ProductSearchingCriteria;
 @Repository
 public interface PetProductRepository extends JpaRepository<PetProduct, Long> {
 
+    // WHEN SUM(CASE WHEN detail.inventoryStatus = 'Sắp có hàng' THEN 1 ELSE 0 END) > 0 THEN ct553.backend.product.entity.InventoryStatus.INCOMING
     @Query(value = """
-            SELECT new ct553.backend.product.entity.PetProduct(
-                pet, 
-                CASE 
-                    WHEN COUNT(CASE WHEN detail.inventoryStatus = ct553.backend.product.entity.InventoryStatus.ON_HAND THEN 1 END) > 0 THEN ct553.backend.product.entity.InventoryStatus.ON_HAND
-                    WHEN COUNT(CASE WHEN detail.inventoryStatus = ct553.backend.product.entity.InventoryStatus.INCOMING THEN 1 END) > 0 THEN ct553.backend.product.entity.InventoryStatus.INCOMING
-                    ELSE ct553.backend.product.entity.InventoryStatus.SOLD_OUT
-                END,
-                SUM(detail.sold)
-            )
-            FROM PetProduct pet 
-            JOIN ProductDetail detail ON pet.id = detail.product.id
-            WHERE pet.category.breed IN (:#{#criteria.breeds}) 
-            AND pet.price BETWEEN :#{#criteria.priceFrom} AND :#{#criteria.priceTo}
-            GROUP BY pet
+        SELECT new ct553.backend.product.entity.PetProduct(
+            pet, 
+            CASE 
+                WHEN COUNT(detail.inventoryStatus) FILTER (WHERE detail.inventoryStatus = ct553.backend.product.entity.InventoryStatus.ON_HAND) > 0 THEN ct553.backend.product.entity.InventoryStatus.ON_HAND
+                WHEN COUNT(detail.inventoryStatus) FILTER (WHERE detail.inventoryStatus = ct553.backend.product.entity.InventoryStatus.INCOMING) > 0 THEN ct553.backend.product.entity.InventoryStatus.INCOMING
+                ELSE ct553.backend.product.entity.InventoryStatus.SOLD_OUT
+            END,
+            SUM(COALESCE(detail.sold, 0)),
+            AVG(COALESCE(review.rate, 0)),
+            COUNT(review.id)
+        )
+        FROM PetProduct pet 
+        LEFT JOIN ProductDetail detail ON pet.id = detail.product.id
+        LEFT JOIN Review review ON pet.id = review.orderDetail.productDetail.product.id
+        JOIN PetCategory category ON pet.category.id = category.id
+        WHERE pet.category.breed IN (:#{#criteria.breeds}) 
+        AND pet.price BETWEEN :#{#criteria.priceFrom} AND :#{#criteria.priceTo}
+        GROUP BY pet, category
         """)
     Page<PetProduct> findAllBy(@Param("criteria") ProductSearchingCriteria searchingCriteria, Pageable pageable);
 

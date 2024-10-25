@@ -22,7 +22,7 @@ public enum PaymentSupplier {
 
     public static PaymentSupplier from(int supplier) {
         return Stream.of(PaymentSupplier.values())
-                .filter(p -> p.getSupplier() == supplier)
+            .filter(p -> p.getSupplier() == supplier)
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }

@@ -85,11 +85,22 @@ public class Product {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date updatedAt;
 
+    @Column(name = "valid_to")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+    private Date validTo;
+
     @Transient
     private InventoryStatus inventoryStatus;
 
     @Transient 
     private long countSold;
+
+    @Transient 
+    private double rating;
+
+    @Transient 
+    private long countRating;
 
     @Transient
     private List<ProductDetailDTO> productDetails = new ArrayList<>();
@@ -118,6 +129,14 @@ public class Product {
         this(product);
         this.inventoryStatus = inventoryStatus;
         this.countSold = countSold;
+    }
+
+    public Product(Product product, InventoryStatus inventoryStatus, long countSold, double rating, long countRating) {
+        this(product);
+        this.inventoryStatus = inventoryStatus;
+        this.countSold = countSold;
+        this.rating = rating;
+        this.countRating = countRating;
     }
 
 }

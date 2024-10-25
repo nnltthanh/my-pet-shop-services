@@ -15,9 +15,10 @@ import ct553.backend.order.control.OrderRepository;
 import ct553.backend.order.entity.Order;
 import ct553.backend.order.entity.OrderCreationRequest;
 import ct553.backend.order.entity.OrderDetail;
-import ct553.backend.order.entity.OrderStatus;
+import ct553.backend.pet.boundary.PetCustomerService;
 import ct553.backend.product.boundary.ProductDetailService;
 import ct553.backend.product.entity.InventoryStatus;
+import ct553.backend.product.entity.PetProduct;
 import ct553.backend.product.entity.ProductDetail;
 import jakarta.transaction.Transactional;
 
@@ -40,6 +41,9 @@ public class OrderService {
     @Autowired
     private ProductDetailService productDetailService;
 
+    @Autowired
+    private PetCustomerService petCustomerService;
+
     Order addOrder(Long customerId, OrderCreationRequest orderRequest) {
         Customer customer = this.customerService.findById(customerId);
         if (customer == null) {
@@ -48,9 +52,9 @@ public class OrderService {
         Customer basicCustomer = new Customer();
         basicCustomer.setId(customerId);
         Order order = Order.from(orderRequest, customer);
-        System.out.println(customer.getId());
+        
         this.orderRepository.save(order);
-        this.addOrderDetailsToOrder(order.getId(), orderRequest.getCartDetails());
+        this.addOrderDetailsToOrder(order.getId(), orderRequest.getCartDetails(), customer);
         return order;
     }
 
@@ -81,7 +85,7 @@ public class OrderService {
         this.orderRepository.deleteById(orderId);
     }
 
-    ArrayList<OrderDetail> addOrderDetailsToOrder(Long orderId, List<Long> cartDetailsIdList) {
+    ArrayList<OrderDetail> addOrderDetailsToOrder(Long orderId, List<Long> cartDetailsIdList, Customer customer) {
 
         cartDetailsIdList.stream().forEach(id -> {
             OrderDetail orderDetail = new OrderDetail(this.cartService.findCartDetailById(id));
@@ -94,6 +98,11 @@ public class OrderService {
             if (productDetail.getSold() == productDetail.getQuantity()) {
                 productDetail.setInventoryStatus(InventoryStatus.SOLD_OUT);
             }
+
+            if (productDetail.getProduct() instanceof PetProduct) {
+                this.petCustomerService.addFromPetProduct((PetProduct) productDetail.getProduct(), customer);
+            }
+
             this.productDetailService.updateProductDetail(productDetail);
         });
 

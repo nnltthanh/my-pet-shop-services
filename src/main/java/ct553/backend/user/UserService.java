@@ -27,7 +27,9 @@ public class UserService {
 
     public List<UserDTO> findAll() {
         List<User> users = this.userRepository.findAll();
-        return users.stream().map(UserDTO::from).map(this::mapUserGroups).toList();
+        return users.stream().map(UserDTO::from)
+                // .map(this::mapUserGroups)
+                .toList();
     }
 
     public UserDTO findById(Long id) {
@@ -35,7 +37,7 @@ public class UserService {
 
         if (user != null) {
             UserDTO userDto = UserDTO.from(user);
-            userDto.setGroups(null);
+            // userDto.setGroups(null);
         }
         return UserDTO.from(user);
     }
@@ -52,7 +54,7 @@ public class UserService {
     @Transactional
     public void add(UserDTO user) {
         if (user.getId() == null || this.findById(user.getId()) == null) {
-            this.userKeycloakSerivce.createUser(user);
+            // this.userKeycloakSerivce.createUser(user);
             this.userRepository.save(User.from(user));
         }
     }
@@ -66,6 +68,10 @@ public class UserService {
         User existingUser = userRepository.findById(id).orElse(null);
         if (existingUser != null) {
             // existingUser.setLocked(!existingUser.isLocked()); // TODO
+            existingUser.setDob(userDTO.getDob());
+            existingUser.setEmail(userDTO.getEmail());
+            existingUser.setName(userDTO.getName());
+            existingUser.setPhone(userDTO.getPhone());
             this.userRepository.save(existingUser);
             return existingUser;
         }

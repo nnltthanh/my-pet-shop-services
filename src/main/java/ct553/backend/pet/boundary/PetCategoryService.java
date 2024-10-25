@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import ct553.backend.pet.control.PetCategoryRepository;
 import ct553.backend.pet.entity.PetBreed;
 import ct553.backend.pet.entity.PetCategory;
+import jakarta.transaction.Transactional;
 
 @Service
+@Transactional
 public class PetCategoryService {
 
     @Autowired

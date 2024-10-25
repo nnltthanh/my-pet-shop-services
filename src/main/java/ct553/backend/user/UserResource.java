@@ -85,22 +85,23 @@ public class UserResource {
         return new ResponseEntity<>(existingUser, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}/updateLockedStatus")
-    public ResponseEntity<?> updateStatusEmployee(@PathVariable Long id) {
-        UserDTO userDTO = userService.findById(id);
-        if (userDTO == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            if (this.userService.update(id, userDTO) != null) {
-                userDTO = userService.findById(id);
-                return new ResponseEntity<>(userDTO, HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
+    // @PutMapping("/{id}/updateLockedStatus")
+    // public ResponseEntity<?> updateStatusEmployee(@PathVariable Long id) {
+    // UserDTO userDTO = userService.findById(id);
+    // if (userDTO == null) {
+    // return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    // } else {
+    // if (this.userService.update(id, userDTO) != null) {
+    // userDTO = userService.findById(id);
+    // return new ResponseEntity<>(userDTO, HttpStatus.OK);
+    // }
+    // return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    // }
+    // }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAvatar(@PathVariable Long id, @RequestParam("image") MultipartFile image) throws IOException {
+    public ResponseEntity<?> updateAvatar(@PathVariable Long id, @RequestParam("image") MultipartFile image)
+            throws IOException {
         String imageURL = cloudinaryService.uploadFile(image);
         ImageData avatar = new ImageData();
         avatar.setImageUrls(imageURL);
@@ -110,6 +111,14 @@ public class UserResource {
         if (user != null)
             return new ResponseEntity<>(user, HttpStatus.OK);
 
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PutMapping("basic-info/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+        User user = this.userService.update(id, userDTO);
+        if (user != null)
+            return new ResponseEntity<>(user, HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
