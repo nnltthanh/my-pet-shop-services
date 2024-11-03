@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import ct553.backend.pet.entity.PetCustomer;
-import ct553.backend.product.entity.PetProduct;
+import ct553.backend.product.pet.PetProduct;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;

@@ -1,13 +1,13 @@
-package ct553.backend.customer;
+// package ct553.backend.customer;
 
-import java.util.Optional;
+// import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+// import org.springframework.data.jpa.repository.JpaRepository;
+// import org.springframework.stereotype.Repository;
 
-@Repository
-public interface CustomerRepository extends JpaRepository<Customer, Long> {
+// @Repository
+// public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-    Optional<Customer> findByAccount(String account);
+//     Optional<Customer> findByAccount(String account);
     
-}
+// }

@@ -8,10 +8,9 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import ct553.backend.customer.Customer;
-import ct553.backend.employee.Employee;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.order.entity.OrderDetail;
+import ct553.backend.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,11 +53,11 @@ public class Review {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private User customer;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
-    private Employee employee;
+    private User employee;
 
     @ManyToOne
     @JoinColumn(name = "order_detail_id")

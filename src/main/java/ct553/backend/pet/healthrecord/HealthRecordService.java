@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ct553.backend.pet.entity.PetCustomer;
-import ct553.backend.product.entity.PetProduct;
+import ct553.backend.product.pet.PetProduct;
 
 public class HealthRecordService {
 

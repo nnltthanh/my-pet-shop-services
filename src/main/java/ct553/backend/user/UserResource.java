@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimNames;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -41,22 +45,35 @@ public class UserResource {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/account/{account}")
-    public ResponseEntity<?> getUserById(@PathVariable String account) {
-        UserDTO user = userService.findByAccount(account);
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    @GetMapping("/login")
+    public UserDTO login(JwtAuthenticationToken auth) {
+        return this.userService.login(auth);
     }
+
+    private String getPrincipalClaimName(Jwt jwt) {
+        String claimName = JwtClaimNames.SUB;
+        // if (properties.getPrincipalAttribute() != null) {
+        //     claimName = properties.getPrincipalAttribute();
+        // }
+        return jwt.getClaim(claimName);
+    }
+
+    // @GetMapping("/account/{account}")
+    // public ResponseEntity<?> getUserById(@PathVariable String account) {
+    //     UserDTO user = userService.findByAccount(account);
+    //     if (user == null) {
+    //         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    //     }
+
+    //     return new ResponseEntity<>(user, HttpStatus.OK);
+    // }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<?> addUser(@RequestPart(value = "user") UserDTO user,
                         @RequestPart(value = "avatar", required = false) MultipartFile avatar) throws IOException {
         UserDTO isExistedUser = this.userService.findByAccount(user.getAccount());
         if (isExistedUser == null) {
-            this.userService.add(user, avatar);
+            // this.userService.add(user, avatar);
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

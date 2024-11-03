@@ -32,8 +32,8 @@ import ct553.backend.importer.PetProductImportColumnHelper.ImportColumnName;
 import ct553.backend.pet.entity.PetBreed;
 import ct553.backend.pet.entity.PetCategory;
 import ct553.backend.pet.healthrecord.HealthRecord;
-import ct553.backend.product.boundary.PetProductService;
-import ct553.backend.product.entity.PetProduct;
+import ct553.backend.product.pet.PetProduct;
+import ct553.backend.product.pet.PetProductService;
 import jakarta.transaction.Transactional;
 
 @Service

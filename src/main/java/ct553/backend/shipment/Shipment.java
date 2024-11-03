@@ -7,7 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.stereotype.Component;
 
 import ct553.backend.address.Address;
-import ct553.backend.product.entity.ProductDetail;
+import ct553.backend.product.productdetail.ProductDetail;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

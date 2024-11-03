@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import ct553.backend.Gender;
-import ct553.backend.customer.Customer;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.imagedata.ImageDataType;
 import ct553.backend.pet.healthrecord.HealthRecord;
-import ct553.backend.product.entity.PetCustomerServiceProduct;
-import ct553.backend.product.entity.PetProduct;
+import ct553.backend.product.pet.PetProduct;
+import ct553.backend.product.service.PetCustomerServiceProduct;
+import ct553.backend.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -67,7 +67,7 @@ public class PetCustomer {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @NotNull(message = "Reference customer is missing")
-    private Customer customer;
+    private User customer;
 
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
@@ -109,7 +109,7 @@ public class PetCustomer {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date updatedAt;
 
-    public static PetCustomer from(PetProduct product, Customer customer) {
+    public static PetCustomer from(PetProduct product, User customer) {
         ImageData imageData = null;
 
         if (product.getImageData() != null) {

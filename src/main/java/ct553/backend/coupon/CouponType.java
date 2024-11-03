@@ -2,7 +2,7 @@ package ct553.backend.coupon;
 
 import java.util.stream.Stream;
 
-import ct553.backend.product.entity.ServiceProductType;
+import ct553.backend.product.service.ServiceProductType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

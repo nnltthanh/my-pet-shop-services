@@ -11,5 +11,6 @@ import ct553.backend.order.entity.OrderDetail;
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {
     
     ArrayList<OrderDetail> findByOrder_Id(Long orderId);
+
 }
 

@@ -10,10 +10,10 @@ import ct553.backend.cart.control.CartDetailRepository;
 import ct553.backend.cart.control.CartRepository;
 import ct553.backend.cart.entity.Cart;
 import ct553.backend.cart.entity.CartDetail;
-import ct553.backend.customer.CustomerService;
-import ct553.backend.product.boundary.ProductDetailService;
-import ct553.backend.product.boundary.ProductService;
-import ct553.backend.product.entity.ProductDetail;
+import ct553.backend.product.ProductService;
+import ct553.backend.product.productdetail.ProductDetail;
+import ct553.backend.product.productdetail.ProductDetailService;
+import ct553.backend.user.UserService;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -33,7 +33,7 @@ public class CartService {
     ProductDetailService productDetailService;
 
     @Autowired
-    CustomerService customerService;
+    UserService customerService;
 
     public CartDetail addProductDetailToCart(Long customerId, CartDetail cartDetail) {
         
@@ -87,7 +87,7 @@ public class CartService {
         Cart cart = this.cartRepository.findByCustomer_Id(customerId).orElse(new Cart());
 
         if (cart.getCustomer() == null) {
-            cart.setCustomer(this.customerService.findById(customerId));
+            cart.setCustomer(this.customerService.findByIdCore(customerId));
             this.cartRepository.saveAndFlush(cart);
         }
         

@@ -1,5 +1,6 @@
 package ct553.backend.order.boundary;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ct553.backend.order.entity.Order;
@@ -38,6 +40,18 @@ public class OrderResource {
     @GetMapping("/{id}/details")
     public ResponseEntity<ArrayList<OrderDetail>> getAllOrderDetails(@PathVariable Long id) {
         return new ResponseEntity<>(this.orderService.findAllOrderDetailsByOrder(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/search-by-criteria/products/services")
+    public ResponseEntity<ArrayList<Order>> getAllServiceProductOrders(@PathVariable Long customerId) {
+        return new ResponseEntity<>(this.orderService.findAllServiceProductOrdersByCustomer(customerId), HttpStatus.OK);
+    }
+
+    @GetMapping("/search-by-criteria/products/services/{productId}")
+    public ResponseEntity<ArrayList<Order>> getAllServiceProductOrders(@PathVariable Long customerId, @PathVariable Long productId,
+    @RequestParam("serveFrom") LocalDateTime serveFrom,
+    @RequestParam("serveTo") LocalDateTime serveTo) {
+        return new ResponseEntity<>(this.orderService.findAllServiceProductOrdersByCustomer(customerId, productId, serveFrom, serveTo), HttpStatus.OK);
     }
 
     @PostMapping

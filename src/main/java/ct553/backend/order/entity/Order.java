@@ -10,11 +10,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import ct553.backend.customer.Customer;
 import ct553.backend.payment.Payment;
+import ct553.backend.pet.entity.PetCustomer;
+import ct553.backend.product.service.PetCustomerServiceProduct;
 import ct553.backend.shipment.Shipment;
+import ct553.backend.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +30,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -83,16 +85,16 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "customer_id")
     // @JsonIgnore
-    private Customer customer;
+    private User customer;
 
     @Column(columnDefinition = "TEXT")
     private String note;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
     // @JsonIgnore
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
-    public static Order from(OrderCreationRequest request, Customer customer) {
+    public static Order from(OrderCreationRequest request, User customer) {
         return Order.builder()
                 .customer(customer)
                 .total(request.getTotal())

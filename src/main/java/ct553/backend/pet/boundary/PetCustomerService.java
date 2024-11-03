@@ -12,14 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import ct553.backend.CloudinaryService;
-import ct553.backend.customer.Customer;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.imagedata.ImageDataType;
 import ct553.backend.pet.control.PetCustomerRepository;
 import ct553.backend.pet.entity.PetCategory;
 import ct553.backend.pet.entity.PetCustomer;
 import ct553.backend.pet.healthrecord.HealthRecord;
-import ct553.backend.product.entity.PetProduct;
+import ct553.backend.product.pet.PetProduct;
+import ct553.backend.user.User;
 import jakarta.transaction.Transactional;
 
 @Transactional
@@ -35,7 +35,7 @@ public class PetCustomerService {
     @Autowired
     PetCategoryService petCategoryService;
 
-    public void addFromPetProduct(PetProduct petProduct, Customer customer) {
+    public void addFromPetProduct(PetProduct petProduct, User customer) {
         PetCustomer petCustomer = PetCustomer.from(petProduct, customer);
         this.mapPetCategory(petCustomer);
         List<HealthRecord> healthRecords = petProduct.getHealthRecord();

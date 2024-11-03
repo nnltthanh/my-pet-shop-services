@@ -3,7 +3,6 @@ package ct553.backend.user;
 import java.util.Date;
 import java.util.List;
 
-import ct553.backend.customer.Customer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,21 +41,21 @@ public class UserDTO {
                 .build();
     }
 
-    public static UserDTO from(Customer user) {
-        if (user == null) {
-            return null;
-        }
-        return UserDTO.builder()
-                .id(user.getId())
-                .account(user.getAccount())
-                .name(user.getName())
-                .phone(user.getPhone())
-                .email(user.getEmail())
-                .dob(user.getDob())
-                .password(user.getPassword())
-                .groups(user.getGroups())
-                .isBlocked(user.getValidTo() == null ? false : true)
-                .avatarUrl(user.getAvatar() == null ? null : user.getAvatar().getImageUrls())
-                .build();
-    }
+    // public static UserDTO from(Customer user) {
+    //     if (user == null) {
+    //         return null;
+    //     }
+    //     return UserDTO.builder()
+    //             .id(user.getId())
+    //             .account(user.getAccount())
+    //             .name(user.getName())
+    //             .phone(user.getPhone())
+    //             .email(user.getEmail())
+    //             .dob(user.getDob())
+    //             .password(user.getPassword())
+    //             .groups(user.getGroups())
+    //             .isBlocked(user.getValidTo() == null ? false : true)
+    //             .avatarUrl(user.getAvatar() == null ? null : user.getAvatar().getImageUrls())
+    //             .build(); 
+    // }
 }

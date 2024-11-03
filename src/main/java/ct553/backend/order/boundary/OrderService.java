@@ -1,5 +1,6 @@
 package ct553.backend.order.boundary;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,18 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ct553.backend.cart.boundary.CartService;
-import ct553.backend.customer.Customer;
-import ct553.backend.customer.CustomerService;
 import ct553.backend.order.control.OrderDetailRepository;
 import ct553.backend.order.control.OrderRepository;
 import ct553.backend.order.entity.Order;
 import ct553.backend.order.entity.OrderCreationRequest;
 import ct553.backend.order.entity.OrderDetail;
 import ct553.backend.pet.boundary.PetCustomerService;
-import ct553.backend.product.boundary.ProductDetailService;
-import ct553.backend.product.entity.InventoryStatus;
-import ct553.backend.product.entity.PetProduct;
-import ct553.backend.product.entity.ProductDetail;
+import ct553.backend.product.InventoryStatus;
+import ct553.backend.product.pet.PetProduct;
+import ct553.backend.product.productdetail.ProductDetail;
+import ct553.backend.product.productdetail.ProductDetailService;
+import ct553.backend.user.User;
+import ct553.backend.user.UserService;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -33,7 +34,7 @@ public class OrderService {
     OrderDetailRepository orderDetailRepository;
 
     @Autowired
-    private CustomerService customerService;
+    private UserService customerService;
 
     @Autowired
     private CartService cartService;
@@ -44,12 +45,12 @@ public class OrderService {
     @Autowired
     private PetCustomerService petCustomerService;
 
-    Order addOrder(Long customerId, OrderCreationRequest orderRequest) {
-        Customer customer = this.customerService.findById(customerId);
+    public Order addOrder(Long customerId, OrderCreationRequest orderRequest) {
+        User customer = this.customerService.findByIdCore(customerId);
         if (customer == null) {
             throw new IllegalArgumentException("Customer not exist");
         }
-        Customer basicCustomer = new Customer();
+        User basicCustomer = new User();
         basicCustomer.setId(customerId);
         Order order = Order.from(orderRequest, customer);
         
@@ -58,16 +59,32 @@ public class OrderService {
         return order;
     }
 
-    void addOrder(Long customerId, Order order) {
-        Customer customer = this.customerService.findById(customerId);
+    public Order addOrder(Long customerId, Order order) {
+        User customer = this.customerService.findByIdCore(customerId);
         order.setStatus(order.getStatus());
         order.setCustomer(customer);
 
-        this.orderRepository.save(order);
+        return this.orderRepository.save(order);
     }
 
     ArrayList<Order> findAllOrders(Long customerId) {
         ArrayList<Order> ordersDB = this.orderRepository.findByCustomer_Id(customerId);
+        ArrayList<Order> ordersReverse = new ArrayList<>(ordersDB);
+        Collections.reverse(ordersReverse);
+        return new ArrayList<>(ordersReverse.stream().filter(
+            o -> o.getOrderDetails() != null && !o.getOrderDetails().isEmpty() && o.getOrderDetails().get(0).getProductDetail().getPetServiceVariant() == null
+        ).toList());
+    }
+
+    public ArrayList<Order> findAllServiceProductOrdersByCustomer(Long customerId) {
+        ArrayList<Order> ordersDB = this.orderRepository.findAllServiceProductOrdersByCustomer(customerId);
+        ArrayList<Order> ordersReverse = new ArrayList<>(ordersDB);
+        Collections.reverse(ordersReverse);
+        return ordersReverse;
+    }
+
+    public ArrayList<Order> findAllServiceProductOrdersByCustomer(Long customerId, Long productId, LocalDateTime serveFrom, LocalDateTime serveTo) {
+        ArrayList<Order> ordersDB = this.orderRepository.findAllServiceProductOrdersByCustomerAndProduct(customerId, productId);
         ArrayList<Order> ordersReverse = new ArrayList<>(ordersDB);
         Collections.reverse(ordersReverse);
         return ordersReverse;
@@ -85,7 +102,7 @@ public class OrderService {
         this.orderRepository.deleteById(orderId);
     }
 
-    ArrayList<OrderDetail> addOrderDetailsToOrder(Long orderId, List<Long> cartDetailsIdList, Customer customer) {
+    ArrayList<OrderDetail> addOrderDetailsToOrder(Long orderId, List<Long> cartDetailsIdList, User customer) {
 
         cartDetailsIdList.stream().forEach(id -> {
             OrderDetail orderDetail = new OrderDetail(this.cartService.findCartDetailById(id));

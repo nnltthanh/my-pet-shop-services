@@ -6,11 +6,11 @@ import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ct553.backend.customer.Customer;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.order.boundary.OrderService;
 import ct553.backend.order.entity.OrderDetail;
-import ct553.backend.product.boundary.ProductService;
+import ct553.backend.product.ProductService;
+import ct553.backend.user.User;
 
 @Service
 public class ReviewService {
@@ -27,7 +27,7 @@ public class ReviewService {
     void addReview(Long orderDetailId, Review review) {
         OrderDetail orderDetail = this.orderService.findOrderDetailById(orderDetailId);
         review.setOrderDetail(orderDetail);
-        Customer customer = orderDetail.getOrder().getCustomer();
+        User customer = orderDetail.getOrder().getCustomer();
         review.setCustomer(customer);
         this.reviewRepository.save(review);
     }

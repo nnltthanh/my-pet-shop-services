@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import ct553.backend.product.entity.Product;
+import ct553.backend.product.Product;
 
 @Service
 public class FileUploaderServiceImpl implements IFileUploaderService {

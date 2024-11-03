@@ -11,22 +11,21 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import ct553.backend.CloudinaryService;
 import ct553.backend.auth.RoleName;
 import ct553.backend.auth.UserKeycloakSerivce;
-import ct553.backend.customer.Customer;
-import ct553.backend.customer.CustomerService;
-import ct553.backend.employee.Employee;
-import ct553.backend.employee.EmployeeService;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.imagedata.ImageDataType;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Transactional
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -35,11 +34,11 @@ public class UserService {
     @Autowired
     UserKeycloakSerivce userKeycloakSerivce;
 
-    @Autowired
-    CustomerService customerService;
+    // @Autowired
+    // CustomerService customerService;
 
-    @Autowired
-    EmployeeService employeeService;
+    // @Autowired
+    // EmployeeService employeeService;
 
     @Autowired
     CloudinaryService cloudinaryService;
@@ -51,6 +50,29 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional
+    public UserDTO login(JwtAuthenticationToken auth) {
+        User user = new User();
+        user.setAccount(auth.getToken().getClaimAsString(StandardClaimNames.PREFERRED_USERNAME));
+        user.setEmail(auth.getToken().getClaimAsString(StandardClaimNames.EMAIL));
+        user.setName(auth.getToken().getClaimAsString(StandardClaimNames.NAME));
+
+        Optional<User> optionalUser = this.userRepository.findByAccount(user.getAccount());
+        User savedUser = null;
+        if (optionalUser.isPresent()) {
+            savedUser = optionalUser.get();
+        } else {
+            savedUser = this.userRepository.save(user);
+        }
+
+        UserDTO userDTO = UserDTO.from(savedUser);
+
+        log.info("userDTO {} ", userDTO);
+        this.mapUserGroups(userDTO);
+        return userDTO;
+    }
+
+    @Transactional
     public UserDTO findById(Long id) {
         User user = userRepository.findById(id).orElse(null);
 
@@ -61,34 +83,39 @@ public class UserService {
         return UserDTO.from(user);
     }
 
+    public User findByIdCore(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
     public UserDTO getLoggedInUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return this.findByAccount(auth.getName());
     }
 
     public UserDTO findByAccount(String account) {
-        return UserDTO.from(this.userRepository.findUserByAccount(account).orElse(null));
+        return UserDTO.from(this.userRepository.findByAccount(account).orElse(null));
     }
+
+    // @Transactional
+    // public void add(UserDTO user, MultipartFile avatar) throws IOException {
+    //     if (user.getId() == null || this.findById(user.getId()) == null) {
+    //         // this.userKeycloakSerivce.createUser(user);
+    //         User beSavedUser = User.from(user);
+    //         if (avatar != null) {
+    //             String imageUrl = this.cloudinaryService.uploadFile(avatar);
+    //             ImageData imageData = new ImageData(null, imageUrl, ImageDataType.AVATAR);
+    //             beSavedUser.setAvatar(imageData);
+    //         }
+
+    //         if (user.getGroups().indexOf("Khách hàng") != -1) {
+    //             this.customerService.add(new Customer(beSavedUser));
+    //         } else {
+    //             this.employeeService.add(new Employee(beSavedUser));
+    //         }
+    //     }
+    // }
 
     @Transactional
-    public void add(UserDTO user, MultipartFile avatar) throws IOException {
-        if (user.getId() == null || this.findById(user.getId()) == null) {
-            // this.userKeycloakSerivce.createUser(user);
-            User beSavedUser = User.from(user);
-            if (avatar != null) {
-                String imageUrl = this.cloudinaryService.uploadFile(avatar);
-                ImageData imageData = new ImageData(null, imageUrl, ImageDataType.AVATAR);
-                beSavedUser.setAvatar(imageData);
-            }
-
-            if (user.getGroups().indexOf("Khách hàng") != -1) {
-                this.customerService.add(new Customer(beSavedUser));
-            } else {
-                this.employeeService.add(new Employee(beSavedUser));
-            }
-        }
-    }
-
     public void deleteById(Long id) {
         this.userRepository.deleteById(id);
     }
@@ -114,6 +141,7 @@ public class UserService {
         return null;
     }
 
+    @Transactional
     public UserDTO updatePartially(Long id, String field, String value) {
         User user = this.userRepository.findById(id).orElse(null);
 

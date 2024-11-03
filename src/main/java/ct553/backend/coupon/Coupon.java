@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import ct553.backend.employee.Employee;
-import ct553.backend.product.entity.ProductDetail;
+import ct553.backend.product.productdetail.ProductDetail;
+import ct553.backend.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -39,7 +39,7 @@ public class Coupon {
 
     @OneToOne
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
-    private Employee employee;
+    private User employee;
 
     @Column(length = 20)
     private String code;

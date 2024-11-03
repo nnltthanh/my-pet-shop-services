@@ -51,11 +51,9 @@ public class AddressService {
             existingAddress.setWardId(address.getWardId());
             existingAddress.setCustomer(address.getCustomer());
 
-            if (!address.getIsDefault()) {
-                existingAddress.setIsDefault(address.getIsDefault());
-            }
+            existingAddress.setIsDefault(address.getIsDefault());
 
-            if (address.getIsDefault() && this.findDefaultAddress(id) != null) {
+            if (address.getIsDefault() && this.findDefaultAddress(id) != null && this.findDefaultAddress(id).getId() != address.getId()) {
                 Address defaultAddress = this.findDefaultAddress(id);
                 defaultAddress.setIsDefault(false);
                 this.addressRepository.save(defaultAddress);

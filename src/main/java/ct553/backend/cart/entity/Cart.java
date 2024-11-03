@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import ct553.backend.customer.Customer;
+import ct553.backend.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -38,7 +38,7 @@ public class Cart {
     @OneToOne
     @JoinColumn(name = "customer_id")
     @JsonIgnore
-    private Customer customer;
+    private User customer;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "cart", orphanRemoval = true)
     @JsonIgnore

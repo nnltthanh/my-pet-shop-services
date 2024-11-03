@@ -16,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import ct553.backend.product.control.ProductRepository;
-import ct553.backend.product.entity.Product;
+import ct553.backend.product.Product;
+import ct553.backend.product.ProductRepository;
 
 @Service
 public class ExcelDataServiceImpl implements IExcelDataService {

@@ -1,73 +1,73 @@
-package ct553.backend.customer;
+// package ct553.backend.customer;
 
-import java.util.ArrayList;
+// import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.stereotype.Service;
+// import org.springframework.web.multipart.MultipartFile;
 
-import ct553.backend.auth.UserKeycloakSerivce;
-import ct553.backend.user.UserDTO;
-import jakarta.transaction.Transactional;
+// import ct553.backend.auth.UserKeycloakSerivce;
+// import ct553.backend.user.UserDTO;
+// import jakarta.transaction.Transactional;
 
-@Service
-@Transactional
-public class CustomerService {
+// @Service
+// @Transactional
+// public class CustomerService {
 
-    @Autowired
-    private CustomerRepository customerRepository;
+//     @Autowired
+//     private CustomerRepository customerRepository;
 
-    @Autowired
-    UserKeycloakSerivce userKeycloakSerivce;
+//     @Autowired
+//     UserKeycloakSerivce userKeycloakSerivce;
 
-    public ArrayList<Customer> findAll() {
-        return (ArrayList<Customer>) customerRepository.findAll();
-    }
+//     public ArrayList<Customer> findAll() {
+//         return (ArrayList<Customer>) customerRepository.findAll();
+//     }
 
-    public Customer findById(Long id) {
-        return customerRepository.findById(id).orElse(null);
-    }
+//     public Customer findById(Long id) {
+//         return customerRepository.findById(id).orElse(null);
+//     }
 
-    public Customer findByAccount(String account) {
-        return customerRepository.findByAccount(account).orElse(null);
-    }
+//     public Customer findByAccount(String account) {
+//         return customerRepository.findByAccount(account).orElse(null);
+//     }
 
-    public void add(Customer customer) {
-        // this.userKeycloakSerivce.createUser(UserDTO.from(customer));
-        this.customerRepository.save(customer);
-    }
+//     public void add(Customer customer) {
+//         // this.userKeycloakSerivce.createUser(UserDTO.from(customer));
+//         this.customerRepository.save(customer);
+//     }
 
-    public void add(Customer customer, MultipartFile avatar) {
-        // this.userKeycloakSerivce.createUser(UserDTO.from(customer));
-        this.customerRepository.save(customer);
-    }
+//     public void add(Customer customer, MultipartFile avatar) {
+//         // this.userKeycloakSerivce.createUser(UserDTO.from(customer));
+//         this.customerRepository.save(customer);
+//     }
 
-    public void deleteById(Long id) {
-        this.customerRepository.deleteById(id);
-    }
+//     public void deleteById(Long id) {
+//         this.customerRepository.deleteById(id);
+//     }
 
-    public Customer updateCustomer(Long id, Customer customer) {
-        Customer existingCustomer = findById(id);
-        if (existingCustomer != null) {
-            // existingCustomer.setLocked(!existingCustomer.isLocked()); TODO
-            this.customerRepository.save(existingCustomer);
-            return existingCustomer;
-        }
-        return null;
-    }
+//     public Customer updateCustomer(Long id, Customer customer) {
+//         Customer existingCustomer = findById(id);
+//         if (existingCustomer != null) {
+//             // existingCustomer.setLocked(!existingCustomer.isLocked()); TODO
+//             this.customerRepository.save(existingCustomer);
+//             return existingCustomer;
+//         }
+//         return null;
+//     }
 
-    public Customer updateCustomerInfo(Long id, Customer customer) {
-        Customer existingCustomer = findById(id);
-        if (existingCustomer != null) {
-            existingCustomer.setName(customer.getName());
-            existingCustomer.setEmail(customer.getEmail());
-            existingCustomer.setName(customer.getName());
-            existingCustomer.setPhone(customer.getPhone());
-            existingCustomer.setDob(customer.getDob());
-            this.customerRepository.save(existingCustomer);
-            return existingCustomer;
-        }
-        return null;
-    }
+//     public Customer updateCustomerInfo(Long id, Customer customer) {
+//         Customer existingCustomer = findById(id);
+//         if (existingCustomer != null) {
+//             existingCustomer.setName(customer.getName());
+//             existingCustomer.setEmail(customer.getEmail());
+//             existingCustomer.setName(customer.getName());
+//             existingCustomer.setPhone(customer.getPhone());
+//             existingCustomer.setDob(customer.getDob());
+//             this.customerRepository.save(existingCustomer);
+//             return existingCustomer;
+//         }
+//         return null;
+//     }
 
-}
+// }

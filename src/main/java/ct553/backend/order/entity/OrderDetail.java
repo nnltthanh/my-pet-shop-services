@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ct553.backend.cart.entity.CartDetail;
-import ct553.backend.product.entity.ProductDetail;
+import ct553.backend.product.productdetail.ProductDetail;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;

@@ -2,7 +2,7 @@ package ct553.backend.importer;
 
 import java.util.List;
 
-import ct553.backend.product.entity.Product;
+import ct553.backend.product.Product;
 
 public interface IExcelDataService {
 
