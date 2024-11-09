@@ -11,6 +11,15 @@ import ct553.backend.order.entity.Order;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     
+    @Query("""
+        select distinct o 
+        from ct553.backend.order.entity.Order o
+        join OrderDetail od on od.order.id = o.id
+        where o.status is not null
+        group by o
+    """)
+    ArrayList<Order> findAll();
+    
     ArrayList<Order> findByCustomer_Id(Long customerId);
 
     @Query("""

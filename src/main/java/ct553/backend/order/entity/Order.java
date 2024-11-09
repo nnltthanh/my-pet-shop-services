@@ -66,9 +66,9 @@ public class Order {
     // @JoinColumn(name = "coupon_id")
     // private Coupon coupon; // check later
 
-    // @ManyToOne
-    // @JoinColumn(name = "staff_id")
-    // private Staff staff;
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private User employee;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "payment_id")

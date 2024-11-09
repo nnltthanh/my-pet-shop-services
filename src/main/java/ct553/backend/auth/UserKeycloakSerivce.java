@@ -9,6 +9,7 @@ import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,20 @@ public class UserKeycloakSerivce {
                             .joinGroup(GroupName.groupNameIdMap.get(group)); // use group id
             }
         }
+    }
+
+    public List<UserRepresentation> findAllByGroup(String groupName)  {
+        return getKeycloak().realm("petshoprealm")
+                        .groups()
+                        .group(groupName)
+                        .members();
+    }
+
+    public List<GroupRepresentation> findAllGroupsOfUser(String account) {
+        return getKeycloak().realm("petshoprealm")
+                .users()
+                .get(findByAccount(account).get().getId())
+                .groups();
     }
 
     public Optional<UserRepresentation> findByAccount(String account)  {

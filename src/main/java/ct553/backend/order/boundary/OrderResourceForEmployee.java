@@ -14,8 +14,9 @@ import ct553.backend.order.entity.Order;
 import ct553.backend.order.entity.OrderDetail;
 
 @RestController
-@RequestMapping("/OrderForEmployee") // need to merge to order resource
+@RequestMapping("/managements/orders")
 public class OrderResourceForEmployee {
+    
     @Autowired
     OrderService orderService;
 

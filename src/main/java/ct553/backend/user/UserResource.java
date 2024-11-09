@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import ct553.backend.auth.GroupName;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -48,6 +49,11 @@ public class UserResource {
     @GetMapping("/login")
     public UserDTO login(JwtAuthenticationToken auth) {
         return this.userService.login(auth);
+    }
+
+    @GetMapping("/groups/{groupName}")
+    public List<UserDTO> login(@PathVariable String groupName) {
+        return this.userService.getUsersInGroup(GroupName.groupNameIdMap.get(groupName));
     }
 
     private String getPrincipalClaimName(Jwt jwt) {

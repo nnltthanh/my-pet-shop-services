@@ -146,6 +146,8 @@ public class OrderService {
         if (order.getPayment() != null) {
             orderDB.setPayment(order.getPayment());
         }
+
+        orderDB.setEmployee(order.getEmployee());
         // if (order.getShipment() != null) {
         //     orderDB.setShipment(order.getShipment());
         // }

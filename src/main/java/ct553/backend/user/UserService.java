@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import ct553.backend.CloudinaryService;
+import ct553.backend.auth.GroupName;
 import ct553.backend.auth.RoleName;
 import ct553.backend.auth.UserKeycloakSerivce;
 import ct553.backend.imagedata.ImageData;
@@ -94,6 +95,13 @@ public class UserService {
 
     public UserDTO findByAccount(String account) {
         return UserDTO.from(this.userRepository.findByAccount(account).orElse(null));
+    }
+
+    public List<UserDTO> getUsersInGroup(String groupName) {
+        return this.userKeycloakSerivce.findAllByGroup(groupName)
+                .stream()
+                .map(u -> findByAccount(u.getUsername()))
+                .toList();
     }
 
     // @Transactional
