@@ -6,12 +6,13 @@ import java.util.Map;
 public enum OrderStatus {
     CREATED,
     PAYMENT,
-    STAFF_PROCESSING,
+    PROCESSING,
     SHIPPING,
     DELIVERED,
     CANCELLED,
     REFUNDED,
-    ON_HOLD;
+    ON_HOLD,
+    FINISHED;
 
     private static final Map<String, OrderStatus> stringToEnum = new HashMap<>();
 

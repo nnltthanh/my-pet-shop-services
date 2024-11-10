@@ -1,6 +1,8 @@
 package ct553.backend.order.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,8 +55,8 @@ public class Order {
 
     @Column
     @CreatedDate
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    private Date createDate;
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
+    private LocalDate createDate;
 
     @Column(precision = 10, scale = 2)
     private BigDecimal total;
