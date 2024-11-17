@@ -29,7 +29,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         (
             product.id IN (
                 SELECT pet.id FROM PetProduct pet 
-                WHERE pet.category.breed IN (:#{#criteria.breeds})
+                WHERE pet.category.breed IN (:#{#criteria.breeds}) 
+                AND (LOWER(pet.category.name) LIKE LOWER(:#{#criteria.keyword}) OR LOWER(pet.name) LIKE LOWER(:#{#criteria.keyword}))
             )
             AND product.price BETWEEN :#{#criteria.priceFrom} AND :#{#criteria.priceTo}
             AND product.validTo IS NULL

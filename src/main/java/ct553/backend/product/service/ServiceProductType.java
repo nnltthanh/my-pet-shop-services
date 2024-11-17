@@ -21,6 +21,19 @@ public enum ServiceProductType {
         return this.type;
     }
 
+    public String getVietnameseValue() {
+        if (this == ServiceProductType.SPA_GROOMING) {
+            return "Spa - Cắt tỉa lông";
+        }
+        if (this == ServiceProductType.PET_HOTEL) {
+            return "Khách sạn thú cưng";
+        }
+        if (this == ServiceProductType.HOSPITAL) {
+            return "Khám chữa bệnh";
+        }
+        return "Khác";
+    }
+
     public static ServiceProductType from(int type) {
         return Stream.of(ServiceProductType.values())
                 .filter(p -> p.getType() == type)

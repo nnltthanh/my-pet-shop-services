@@ -29,5 +29,9 @@ public class StatisticResource {
         return this.statisticService.getStatisticByFilter(period);
     }
     
+    @GetMapping("/period/{period}/report")
+    public StatisticTimeDataReport getStatisticReportByFilter(@PathVariable StatisticFilterPeriod period) {
+        return this.statisticService.getReportStatisticByFilter(period);
+    }
 
 }

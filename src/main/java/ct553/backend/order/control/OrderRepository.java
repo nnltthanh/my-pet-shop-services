@@ -5,30 +5,31 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.antlr.v4.runtime.atn.SemanticContext.AND;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import ct553.backend.order.entity.Order;
-import ct553.backend.statistic.StatisticDetail;
+import ct553.backend.order.entity.OrderDetail;
+import ct553.backend.product.service.PetCustomerServiceProduct;
+import ct553.backend.statistic.DateRevenueReport;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    @Query("""
+        @Query("""
                 select distinct o
                 from ct553.backend.order.entity.Order o
                 join OrderDetail od on od.order.id = o.id
                 where o.status is not null
                 group by o
-            """)
-    ArrayList<Order> findAll();
+        """)
+        ArrayList<Order> findAll();
 
-    ArrayList<Order> findByCustomer_Id(Long customerId);
+        ArrayList<Order> findByCustomer_Id(Long customerId);
 
-    @Query("""
+        @Query("""
                 select distinct o
                 from ct553.backend.order.entity.Order o
                 join OrderDetail od on od.order.id = o.id
@@ -36,11 +37,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                 join PetCustomerServiceProduct pcsp on pcsp.serviceProduct.id = sp.id
                 where od.order.customer.id = :customerId
                 group by o
-            """)
+        """)
 
-    ArrayList<Order> findAllServiceProductOrdersByCustomer(Long customerId);
+        ArrayList<Order> findAllServiceProductOrdersByCustomer(Long customerId);
 
-    @Query("""
+        @Query("""
                 select distinct o
                 from ct553.backend.order.entity.Order o
                 join OrderDetail od on od.order.id = o.id
@@ -48,46 +49,93 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                 join PetCustomerServiceProduct pcsp on pcsp.serviceProduct.id = sp.id
                 where od.order.customer.id = :customerId and sp.id = :productId
                 group by o
-            """)
-    ArrayList<Order> findAllServiceProductOrdersByCustomerAndProduct(Long customerId, Long productId);
+        """)
+        ArrayList<Order> findAllServiceProductOrdersByCustomerAndProduct(Long customerId, Long productId);
 
-    @Query("SELECT COALESCE(SUM(o.total), 0) FROM ct553.backend.order.entity.Order o WHERE o.status = 'FINISHED' AND o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd")
-    BigDecimal sumOfFinishedOrdersInCurrentMonth(@Param("currentMonthStart") LocalDate currentMonthStart,
-            @Param("currentMonthEnd") LocalDate currentMonthEnd);
+        @Query("""
+                SELECT COALESCE(SUM(o.total), 0)
+                FROM ct553.backend.order.entity.Order o WHERE o.status = 'FINISHED'
+                AND o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd
+        """)
+        BigDecimal sumOfFinishedOrdersInCurrentMonth(@Param("currentMonthStart") LocalDate currentMonthStart,
+                        @Param("currentMonthEnd") LocalDate currentMonthEnd);
 
-    @Query("""
-               SELECT COUNT(o) FROM ct553.backend.order.entity.Order o
-               LEFT JOIN OrderDetail od on o.id = od.order.id
-               WHERE
+        @Query("""
+                SELECT COUNT(DISTINCT o) FROM ct553.backend.order.entity.Order o
+                LEFT JOIN OrderDetail od on o.id = od.order.id
+                WHERE
                 (
-                    od.productDetail.product.id IN (
+                od.productDetail.product.id IN (
                         SELECT pet.id FROM PetProduct pet
-                    )
+                )
                 ) AND o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd
-            """)
-    Long countOrdersInCurrentMonth(@Param("currentMonthStart") LocalDate currentMonthStart,
-            @Param("currentMonthEnd") LocalDate currentMonthEnd);
+        """)
+        Long countOrdersInCurrentMonth(@Param("currentMonthStart") LocalDate currentMonthStart,
+                        @Param("currentMonthEnd") LocalDate currentMonthEnd);
 
-    @Query("""
-                SELECT COUNT(DISTINCT od.productDetail.product.id)
+        @Query("""
+                SELECT SUM(COALESCE(od.quantity, 0))
                 FROM Order o
                 LEFT JOIN OrderDetail od ON o.id = od.order.id
                 WHERE od.productDetail.product.id IN (
-                    SELECT DISTINCT pet.id FROM PetProduct pet
+                SELECT DISTINCT pet.id FROM PetProduct pet
                 )
                 AND o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd
-            """)
-    Long countNonServiceProductsInCurrentMonth(@Param("currentMonthStart") LocalDate currentMonthStart,
-            @Param("currentMonthEnd") LocalDate currentMonthEnd);
+        """)
+        Long countNonServiceProductsInCurrentMonth(@Param("currentMonthStart") LocalDate currentMonthStart,
+                        @Param("currentMonthEnd") LocalDate currentMonthEnd);
 
-    @Query("""
-               SELECT COUNT(DISTINCT pcsp.id)
-               FROM PetCustomerServiceProduct pcsp
-               JOIN ct553.backend.order.entity.Order o ON o.id = pcsp.order.id
-               WHERE o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd
-            """)
-    Long countServiceProductsInCurrentMonth(@Param("currentMonthStart") LocalDate currentMonthStart,
-            @Param("currentMonthEnd") LocalDate currentMonthEnd);
+        @Query("""
+                SELECT COUNT(pcsp) FROM PetCustomerServiceProduct pcsp
+                JOIN ct553.backend.order.entity.Order o ON o.id = pcsp.order.id
+                WHERE o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd
+        """)
+        Long countServiceProductsInCurrentMonth(@Param("currentMonthStart") LocalDate currentMonthStart,
+                        @Param("currentMonthEnd") LocalDate currentMonthEnd);
 
+        @Query("""
+                SELECT new ct553.backend.statistic.DateRevenueReport(o.createDate, SUM(o.total))
+                FROM ct553.backend.order.entity.Order o WHERE o.status = 'FINISHED'
+                AND o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd
+                GROUP BY o.createDate
+        """)
+        List<DateRevenueReport> getFinishedOrdersInCurrentMonth(@Param("currentMonthStart") LocalDate currentMonthStart,
+                        @Param("currentMonthEnd") LocalDate currentMonthEnd);
+
+        @Query("""
+                SELECT o FROM ct553.backend.order.entity.Order o
+                LEFT JOIN OrderDetail od on o.id = od.order.id
+                WHERE
+                (
+                od.productDetail.product.id IN (
+                        SELECT pet.id FROM PetProduct pet
+                )
+                ) AND o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd
+        """)
+        List<Order> getOrdersInCurrentMonth(@Param("currentMonthStart") LocalDate currentMonthStart,
+                        @Param("currentMonthEnd") LocalDate currentMonthEnd);
+
+        @Query("""
+                SELECT od
+                FROM Order o
+                LEFT JOIN OrderDetail od ON o.id = od.order.id
+                WHERE od.productDetail.product.id IN (
+                SELECT DISTINCT pet.id FROM PetProduct pet
+                )
+                AND o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd
+                ORDER BY o.createDate
+        """)
+        List<OrderDetail> getNonServiceProductsInCurrentMonth(@Param("currentMonthStart") LocalDate currentMonthStart,
+                        @Param("currentMonthEnd") LocalDate currentMonthEnd);
+
+        @Query("""
+                SELECT pcsp FROM PetCustomerServiceProduct pcsp
+                JOIN ct553.backend.order.entity.Order o ON o.id = pcsp.order.id
+                WHERE o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd
+                ORDER BY o.createDate
+        """)
+        List<PetCustomerServiceProduct> getServiceProductsInCurrentMonth(
+                        @Param("currentMonthStart") LocalDate currentMonthStart,
+                        @Param("currentMonthEnd") LocalDate currentMonthEnd);
 
 }

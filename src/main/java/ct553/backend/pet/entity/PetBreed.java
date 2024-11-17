@@ -19,6 +19,16 @@ public enum PetBreed {
         return this.breed;
     }
 
+    public String getVietnameseValue() {
+        if (this.breed.equals("Dog")) {
+            return "Chó";
+        }
+        if (this.breed.equals("Cat")) {
+            return "Mèo";
+        }
+        return this.breed;
+    }
+
     public static PetBreed from(String breed) {
         return Stream.of(PetBreed.values())
                 .filter(p -> p.getBreed().equalsIgnoreCase(breed))

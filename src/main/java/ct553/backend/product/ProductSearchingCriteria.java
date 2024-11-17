@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import ct553.backend.pet.entity.PetBreed;
@@ -18,6 +19,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductSearchingCriteria {
+
+    @Nullable
+    private String keyword;
     
     @Nullable
     private BigDecimal priceFrom = new BigDecimal(0);

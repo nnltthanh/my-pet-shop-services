@@ -9,4 +9,28 @@ public enum PetServiceVariantName {
     FURRY_LENGTH,
     OTHER;
 
+    public String getVietnameseValue() {
+        if (this == PetServiceVariantName.WEIGHT) {
+            return "Cân nặng";
+        }
+
+        if (this == PetServiceVariantName.SIZE) {
+            return "Kích cỡ";
+        }
+
+        if (this == PetServiceVariantName.COLOR) {
+            return "Màu sắc";
+        }
+
+        if (this == PetServiceVariantName.TIME) {
+            return "Thời gian";
+        }
+
+        if (this == PetServiceVariantName.FURRY_LENGTH) {
+            return "Độ dài lông";
+        }
+
+        return "Khác";
+    }
+
 }

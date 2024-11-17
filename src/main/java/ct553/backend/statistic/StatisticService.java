@@ -7,6 +7,7 @@ import java.time.Month;
 import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import ct553.backend.order.control.OrderRepository;
 import ct553.backend.product.ProductRepository;
 import ct553.backend.statistic.StatisticTimeData.StatisticFilterPeriod;
-import ct553.backend.statistic.StatisticTimeData.StatisticFilterType;
 
 @Service
 public class StatisticService {
@@ -263,5 +263,49 @@ public class StatisticService {
         return firstDayOfCurrentQuarter;
     }
 
+    public StatisticTimeDataReport getReportStatisticByFilter(StatisticFilterPeriod period) {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startCurrentDate = null;
+        LocalDate endCurrentDate = null;
+        switch (period) {
+            case YEAR:
+                startCurrentDate = currentDate.with(TemporalAdjusters.firstDayOfYear());
+                endCurrentDate = currentDate.with(TemporalAdjusters.lastDayOfYear());
+                break;
+
+            case QUARTER:
+                startCurrentDate = this.buildQuarter(currentDate);
+                endCurrentDate = startCurrentDate.plusMonths(3).minusDays(1);
+                break;
+
+            case MONTH:
+                startCurrentDate = currentDate.with(TemporalAdjusters.firstDayOfMonth());
+                endCurrentDate = currentDate.with(TemporalAdjusters.lastDayOfMonth());
+                break;
+
+            case WEEK:
+                startCurrentDate = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                endCurrentDate = startCurrentDate.plusDays(6);
+                break;
+            default:
+                break;
+        }
+        StatisticTimeDataReport data = new StatisticTimeDataReport();
+        data.setOrdersByPeriods(orderRepository.getOrdersInCurrentMonth(startCurrentDate, endCurrentDate));
+        data.setProductsByPeriods(orderRepository.getNonServiceProductsInCurrentMonth(startCurrentDate, endCurrentDate));
+        data.setServicesByPeriods(orderRepository.getServiceProductsInCurrentMonth(startCurrentDate, endCurrentDate));
+        data.setRevenuesByPeriods(
+            orderRepository.getFinishedOrdersInCurrentMonth(startCurrentDate, endCurrentDate)
+            // .stream()
+            // .map(o -> {
+            //     return new DateRevenueReport(o.getCreateDate(), o.getTotal());
+            // })
+            // .sorted(Comparator.comparing(DateRevenueReport::getDate))
+            // .toList()
+            );
+        data.setPeriod(period);
+
+        return data;
+    }
     
 }

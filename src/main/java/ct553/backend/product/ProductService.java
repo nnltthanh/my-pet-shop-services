@@ -41,6 +41,12 @@ public class ProductService {
 
     public ProductOverviewResponse findProductOverviewResponseBy(ProductSortingCriteria sortingCriteria,
             ProductSearchingCriteria searchingCriteria, Pageable pageable) {
+        if (searchingCriteria != null && searchingCriteria.getKeyword() == null) {
+            searchingCriteria.setKeyword("%%");
+        } else if (searchingCriteria != null && searchingCriteria.getKeyword() != null) {
+            searchingCriteria.setKeyword("%" + searchingCriteria.getKeyword() + "%");
+        }
+        System.out.println(searchingCriteria);
         Page<Product> products = productRepository.findAllBy(
                 searchingCriteria,
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)));

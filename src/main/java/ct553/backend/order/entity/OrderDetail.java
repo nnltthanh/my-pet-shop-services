@@ -1,9 +1,13 @@
 package ct553.backend.order.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import ct553.backend.cart.entity.CartDetail;
@@ -11,6 +15,7 @@ import ct553.backend.product.productdetail.ProductDetail;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,6 +32,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "order_detail")
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class OrderDetail {
 
     @Id
@@ -36,6 +42,11 @@ public class OrderDetail {
 
     @Column
     private int quantity;
+
+    @Column
+    @CreatedDate
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
+    private LocalDate createDate;
 
     @Column(precision = 10, scale = 2)
     private BigDecimal total;
