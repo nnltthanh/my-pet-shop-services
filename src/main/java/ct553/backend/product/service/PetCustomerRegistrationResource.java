@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
+import ct553.backend.auth.RoleName;
 import ct553.backend.product.productdetail.ProductDetail;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -27,6 +29,7 @@ public class PetCustomerRegistrationResource {
     PetCustomerRegistrationService petCustomerRegistrationService;
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<PetCustomerServiceProduct> add(
         @RequestPart(value = "registration") PetCustomerServiceProduct petCustomerServiceProduct, 
         @RequestPart(value = "productDetails") ArrayList<ProductDetail> productDetails) {
@@ -34,9 +37,15 @@ public class PetCustomerRegistrationResource {
     }
 
     @GetMapping("/{customerId}")
-    public List<PetCustomerServiceProduct> findAll(@PathVariable Long customerId) {
+    public List<PetCustomerServiceProduct> findAllByCustomerID(@PathVariable Long customerId) {
         return this.petCustomerRegistrationService.findAllByCustomerId(customerId);
     }
+
+    @GetMapping
+    public List<PetCustomerServiceProduct> findAll() {
+        return this.petCustomerRegistrationService.findAll();
+    }
+
 
 
 }

@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import ct553.backend.auth.RoleName;
 import ct553.backend.product.productdetail.ProductDetail;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,6 +69,7 @@ public class ServiceProductResource {
     
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.ADMIN})
     public ResponseEntity<ServiceProduct> add(@Valid 
             @RequestPart(value = "serviceProduct") ServiceProduct serviceProduct,
             @RequestPart(value = "productDetails") List<ProductDetail> productDetails,
@@ -75,6 +78,7 @@ public class ServiceProductResource {
     }
 
     @PutMapping(value = "/{id}" ,consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.ADMIN})
     public ResponseEntity<ServiceProduct> update(
             @PathVariable Long id,
             @RequestPart(value = "serviceProduct") ServiceProduct serviceProduct,
@@ -84,6 +88,7 @@ public class ServiceProductResource {
     }
 
     @DeleteMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.ADMIN})
     public ResponseEntity<?> deleteProductById(@PathVariable Long id) {
         this.serviceProductService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);

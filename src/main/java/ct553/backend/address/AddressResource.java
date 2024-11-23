@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ct553.backend.auth.RoleName;
+import jakarta.annotation.security.RolesAllowed;
+
 @RestController
 @RequestMapping("/addresses")
 public class AddressResource {
@@ -23,6 +26,7 @@ public class AddressResource {
     AddressService addressService;
 
     @GetMapping
+    @RolesAllowed({RoleName.CUSTOMER})
     public ArrayList<Address> getAllAddresses() {
         return this.addressService.findAll();
     }
@@ -37,23 +41,27 @@ public class AddressResource {
     }
 
     @GetMapping("/customer/{id}/default")
+    @RolesAllowed({RoleName.CUSTOMER})
     public Address getDefaultAddress(@PathVariable Long id) {
         return addressService.findDefaultAddress(id);
     }
 
     @GetMapping("/customer/{id}")
+    @RolesAllowed({RoleName.CUSTOMER})
     public ResponseEntity<?> getAddressByCustomerId(@PathVariable Long id) {
         List<Address> addresses = addressService.findByCustomerId(id);
         return new ResponseEntity<>(addresses, HttpStatus.OK);
     }
 
     @PostMapping
+    @RolesAllowed({RoleName.CUSTOMER})
     public ResponseEntity<?> addAddress(@RequestBody Address address) {
         this.addressService.add(address);
         return new ResponseEntity<>(address, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
+    @RolesAllowed({RoleName.CUSTOMER})
     public ResponseEntity<String> deleteAddressById(@PathVariable Long id) {
         Address address = addressService.findById(id);
         if (address == null) {
@@ -64,6 +72,7 @@ public class AddressResource {
     }
 
     @PutMapping("/customer/{id}")
+    @RolesAllowed({RoleName.CUSTOMER})
     public void updateAddressByCustomerId(@PathVariable Long id, @RequestBody Address address) {
         this.addressService.updateAddress(id, address);
     }

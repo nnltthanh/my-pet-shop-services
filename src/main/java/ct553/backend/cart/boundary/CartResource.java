@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ct553.backend.auth.RoleName;
 import ct553.backend.cart.entity.CartDetail;
+import jakarta.annotation.security.RolesAllowed;
 
 @RestController
 @RequestMapping("/customers/{customerId}/cart")
@@ -24,6 +26,7 @@ public class CartResource {
     CartService cartService;
 
     @PostMapping
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<?> addProductDetailToCart(@PathVariable Long customerId,
              @RequestBody CartDetail cartDetail) {
         CartDetail cartDetailDB = this.cartService.addProductDetailToCart(customerId, cartDetail);
@@ -34,6 +37,7 @@ public class CartResource {
     }
 
     @GetMapping
+    @RolesAllowed({RoleName.CUSTOMER})
     public ResponseEntity<?> getCart(@PathVariable Long customerId) {
         ArrayList<CartDetail> cartDetails = this.cartService.getAllCartDetails(customerId);
         if (cartDetails.size() > 0) {
@@ -43,6 +47,7 @@ public class CartResource {
     }
 
     @GetMapping("/{cartDetailId}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<?> getCartDetail(@PathVariable Long cartDetailId) {
         CartDetail cartDetail = this.cartService.findCartDetailById(cartDetailId);
         if (cartDetail != null) {
@@ -52,11 +57,13 @@ public class CartResource {
     }
 
     @DeleteMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public void deleteCartDetail(@PathVariable(value = "customerId") Long customerId, @PathVariable(value = "id") Long id) {
         this.cartService.deleteCartDetail(id);
     }
 
     @PutMapping
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<?> updateCartDetail(@RequestBody CartDetail cartDetail) {
         CartDetail updatedCartDetail = this.cartService.updateCartDetail(cartDetail);
         return new ResponseEntity<>(updatedCartDetail, HttpStatus.OK);

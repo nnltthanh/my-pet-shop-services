@@ -10,6 +10,6 @@ import ct553.backend.pet.entity.PetCustomer;
 @Repository
 public interface PetCustomerRepository extends JpaRepository<PetCustomer, Long> {
     
-    List<PetCustomer> findAllByCustomer_Id(Long id);
+    List<PetCustomer> findAllByCustomer_IdOrderByCreatedAtDesc(Long id);
 
 }

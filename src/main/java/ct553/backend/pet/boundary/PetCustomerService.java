@@ -82,7 +82,7 @@ public class PetCustomerService {
     }
 
     public List<PetCustomer> findAllByCustomer(Long customerId) {
-        return this.petCustomerRepository.findAllByCustomer_Id(customerId);
+        return this.petCustomerRepository.findAllByCustomer_IdOrderByCreatedAtDesc(customerId);
     }
 
     public PetCustomer findById(Long id) {

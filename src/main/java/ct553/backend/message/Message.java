@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import ct553.backend.conversation.Conversation;
 import ct553.backend.user.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -47,7 +48,7 @@ public class Message {
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "conversation_id")
     private Conversation conversation;
 

@@ -59,6 +59,14 @@ public class PetCustomerRegistrationService {
 
     }
 
+    public List<PetCustomerServiceProduct> findAll() {
+        return this.petCustomerServiceProductRepository.findAll()
+                    .stream().sorted(Comparator.comparing(PetCustomerServiceProduct::getId).reversed())
+                    .toList();
+        // List<Long> productIds = list.stream().map(l -> l.getServiceProduct().getId()).toList();
+
+    } 
+
     
 
 }

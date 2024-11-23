@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ct553.backend.auth.RoleName;
 import ct553.backend.pet.entity.PetCategory;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 
 @RestController
@@ -38,12 +40,14 @@ public class PetCategoryResource {
     }
 
     @PostMapping
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<?> add(@Valid @RequestBody PetCategory Pet) {
         this.petCategoryService.add(Pet);
         return new ResponseEntity<>(Pet, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.ADMIN})
     public ResponseEntity<String> deleteById(@PathVariable Long id) {
         PetCategory Pet = petCategoryService.findById(id);
         if (Pet == null) {

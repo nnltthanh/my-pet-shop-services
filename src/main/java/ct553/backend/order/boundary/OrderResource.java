@@ -16,12 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ct553.backend.auth.RoleName;
 import ct553.backend.order.entity.Order;
 import ct553.backend.order.entity.OrderCreationRequest;
 import ct553.backend.order.entity.OrderDetail;
+import jakarta.annotation.security.RolesAllowed;
 
 @RestController
 @RequestMapping("/customers/{customerId}/orders")
+@RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
 public class OrderResource {
 
     @Autowired

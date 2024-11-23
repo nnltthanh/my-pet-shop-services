@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import ct553.backend.auth.RoleName;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.imagedata.ImageDataService;
 import ct553.backend.imagedata.ImageDataType;
 import jakarta.annotation.Nullable;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -84,6 +86,7 @@ public class ReviewResource {
     }
 
     @PostMapping(value = "/order-details/{orderDetailId}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<Review> addReview(@PathVariable Long orderDetailId,
         @RequestPart(name = "review", required = true) Review review,
         @RequestPart(value = "images", required = false) List<MultipartFile> files) throws IOException {
@@ -97,6 +100,7 @@ public class ReviewResource {
     }
 
     @DeleteMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<String> deleteReviewById(@PathVariable Long id) {
         Review Review = this.reviewService.findReviewById(id);
         if (Review == null) {
@@ -108,6 +112,7 @@ public class ReviewResource {
     }
 
     @PutMapping(value = "{id}/upload")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<?> upload(@PathVariable Long id, @Nullable @RequestParam("images") List<MultipartFile> files) throws IOException
              {
         if (Objects.nonNull(files)) {

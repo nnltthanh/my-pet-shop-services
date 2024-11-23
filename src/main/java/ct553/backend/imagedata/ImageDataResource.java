@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ct553.backend.auth.RoleName;
+import jakarta.annotation.security.RolesAllowed;
+
 // @CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/image-data")
@@ -36,6 +39,7 @@ public class ImageDataResource {
     }
 
     @DeleteMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<String> deleteImageDataById(@PathVariable Long id) {
         ImageData imageData = this.imageDataService.findById(id);
         if (imageData == null) {
@@ -47,6 +51,7 @@ public class ImageDataResource {
     }
 
     @PutMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<String> updateImageDataById(@PathVariable Long id, @RequestBody ImageData imageData) {
         if (this.imageDataService.update(id, imageData) != null) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -55,6 +60,7 @@ public class ImageDataResource {
     }
 
     @PostMapping
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public void addImageData(@RequestBody ImageData imageData) {
         imageDataService.addImageData(imageData);
     }

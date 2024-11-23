@@ -1,5 +1,6 @@
 package ct553.backend.conversation;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.stereotype.Component;
@@ -36,11 +37,11 @@ public class Conversation {
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    private Date startTime;
+    private LocalDateTime startTime;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
-    private Date endTime;
+    private LocalDateTime endTime;
 
     @JoinColumn(name = "sender_id")
     @ManyToOne

@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import ct553.backend.auth.RoleName;
+import jakarta.annotation.security.RolesAllowed;
+
 // @CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/post")
@@ -29,6 +32,7 @@ public class PostResource {
     }
 
     @DeleteMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.ADMIN})
     public ResponseEntity<String> deletePostById(@PathVariable Long id) {
         Post post = this.postService.findPostById(id);
         if (post == null) {
@@ -40,6 +44,7 @@ public class PostResource {
     }
 
     @PutMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.ADMIN})
     public ResponseEntity<String> updatePostById(@PathVariable Long id, @RequestBody Post post) {
         if (this.postService.updatePost(id, post) != null) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -48,6 +53,7 @@ public class PostResource {
     }
 
     @PostMapping
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.ADMIN})
     public void addPost(@RequestBody Post post) {
         postService.addPost(post);
     }

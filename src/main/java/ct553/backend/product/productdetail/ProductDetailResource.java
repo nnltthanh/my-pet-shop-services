@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import ct553.backend.auth.RoleName;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.imagedata.ImageDataService;
 import ct553.backend.imagedata.ImageDataType;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,6 +58,7 @@ public class ProductDetailResource {
     }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.ADMIN})
     public ResponseEntity<ProductDetail> addProductDetail(@Valid @RequestPart(value = "productDetail") ProductDetail productDetail,
             @RequestPart(value = "images", required = false) List<MultipartFile> files) throws IOException {
         ImageData imageData = this.imageDataService.buildImageData(files, ImageDataType.PRODUCT_DETAIL);
@@ -64,6 +67,7 @@ public class ProductDetailResource {
     }
 
     @PutMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.ADMIN})
     public ResponseEntity<?> updateProductDetail(@PathVariable Long id, @RequestBody ProductDetail updatedProductDetailInfo) {
         ProductDetail existingProductDetail = this.productService.findProductDetailById(id);
         if (existingProductDetail == null) {
@@ -83,6 +87,7 @@ public class ProductDetailResource {
     }
 
     @DeleteMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.ADMIN})
     public ResponseEntity<String> deleteProductDetailById(@PathVariable Long id) {
         ProductDetail productDetail = this.productService.findProductDetailById(id);
         if (productDetail == null) {

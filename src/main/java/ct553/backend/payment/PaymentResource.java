@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ct553.backend.auth.RoleName;
 import ct553.backend.order.boundary.OrderService;
 import ct553.backend.order.entity.Order;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.ServletException;
 
 @RestController
 @RequestMapping("/payment")
+@RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
 public class PaymentResource {
 
     @Autowired

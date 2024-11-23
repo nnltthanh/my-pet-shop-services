@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import ct553.backend.auth.RoleName;
 import ct553.backend.product.ProductSearchingCriteria;
 import ct553.backend.product.ProductSortingCriteria;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,12 +57,14 @@ public class PetProductResource {
     }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.ADMIN})
     public ResponseEntity<PetProduct> add(@Valid @RequestPart(value = "petProduct") PetProduct petProduct,
             @RequestPart(value = "image", required = false) MultipartFile multipartFile) throws IOException {
         return new ResponseEntity<>(this.petService.add(petProduct, multipartFile), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.ADMIN})
     public ResponseEntity<?> updateProduct(@PathVariable Long id, 
                             @Valid @RequestPart(value = "petProduct") PetProduct updatedProductInfo,
                             @RequestPart(value = "image", required = false) MultipartFile multipartFile) throws IOException {
@@ -74,6 +78,7 @@ public class PetProductResource {
     }
 
     @DeleteMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.ADMIN})
     public ResponseEntity<String> deleteById(@PathVariable Long id) {
         PetProduct Pet = petService.findById(id);
         if (Pet == null) {

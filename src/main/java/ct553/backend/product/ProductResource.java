@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import ct553.backend.auth.RoleName;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.imagedata.ImageDataService;
 import ct553.backend.imagedata.ImageDataType;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,7 +41,6 @@ public class ProductResource {
 
     @GetMapping({ "/", "", "/search", "search" })
     @ResponseStatus(value = HttpStatus.OK)
-    // @RolesAllowed({ RoleName.ADMIN })
     public ProductOverviewResponse findAll(
             @RequestParam(value = "page", required = false, defaultValue = "0") int numberOfPage,
             @RequestParam(value = "pageSize", required = false, defaultValue = "1000000000") int pageSize,
@@ -61,6 +62,7 @@ public class ProductResource {
     }
 
     @PutMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.ADMIN})
     public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody Product updatedProductInfo) {
         Product existingProduct = this.productService.findProductById(id);
         if (existingProduct == null) {
@@ -73,6 +75,7 @@ public class ProductResource {
     }
 
     @PutMapping(value = "/{productId}/upload")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<?> uploadProductImage(@PathVariable Long productId,
             @RequestParam("images") List<MultipartFile> files) throws IOException {
         ImageData imageData = this.imageDataService.buildImageData(files, ImageDataType.PRODUCT);
@@ -81,6 +84,7 @@ public class ProductResource {
     }
 
     @DeleteMapping("/{id}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.ADMIN})
     public ResponseEntity<?> deleteProductById(@PathVariable Long id) {
         Product product = this.productService.findProductById(id);
         if (product == null) {

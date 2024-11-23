@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import ct553.backend.auth.GroupName;
+import ct553.backend.auth.RoleName;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -56,14 +58,6 @@ public class UserResource {
         return this.userService.getUsersInGroup(GroupName.groupNameIdMap.get(groupName));
     }
 
-    private String getPrincipalClaimName(Jwt jwt) {
-        String claimName = JwtClaimNames.SUB;
-        // if (properties.getPrincipalAttribute() != null) {
-        //     claimName = properties.getPrincipalAttribute();
-        // }
-        return jwt.getClaim(claimName);
-    }
-
     // @GetMapping("/account/{account}")
     // public ResponseEntity<?> getUserById(@PathVariable String account) {
     //     UserDTO user = userService.findByAccount(account);
@@ -75,6 +69,7 @@ public class UserResource {
     // }
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @RolesAllowed({RoleName.ADMIN})
     public ResponseEntity<?> addUser(@RequestPart(value = "user") UserDTO user,
                         @RequestPart(value = "avatar", required = false) MultipartFile avatar) throws IOException {
         UserDTO isExistedUser = this.userService.findByAccount(user.getAccount());
@@ -86,6 +81,7 @@ public class UserResource {
     }
 
     @DeleteMapping("/{id}")
+    @RolesAllowed({RoleName.ADMIN})
     public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
         UserDTO userDTO = this.userService.findById(id);
         if (userDTO == null) {
@@ -95,16 +91,8 @@ public class UserResource {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/loginEmployee")
-    public ResponseEntity<?> loginCustomer(@RequestBody User user) {
-        UserDTO existingUser = userService.findByAccount(user.getAccount());
-        if (existingUser == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(existingUser, HttpStatus.OK);
-    }
-
     @PutMapping(value = "basic-info/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<?> update(@PathVariable Long id, 
                 @RequestPart(value = "user") UserDTO userDTO,
                 @RequestPart(value = "avatar", required = false) MultipartFile avatar) throws IOException {
@@ -115,6 +103,7 @@ public class UserResource {
     }
 
     @PutMapping("{id}/fields/{field}")
+    @RolesAllowed({RoleName.RECEPTIONIST, RoleName.SERVICE_STAFF, RoleName.CUSTOMER, RoleName.ADMIN})
     public ResponseEntity<?> updatePartially(@PathVariable Long id, @PathVariable String field, @RequestBody(required = false) String value) {
         UserDTO user = this.userService.updatePartially(id, field, value);
         if (user != null)

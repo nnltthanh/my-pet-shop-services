@@ -30,6 +30,7 @@ public class SecurityConfig {
             //     .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/customers")).permitAll()
             //     .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/import")).permitAll()
             //         .anyRequest().authenticated();
+            // authz.requestMatchers(null, null)
             authz.anyRequest().permitAll();
         });
 
