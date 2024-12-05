@@ -72,6 +72,7 @@ public class UserKeycloakSerivce {
         userRepresentation.setEmailVerified(true);
         userRepresentation.setFirstName(userDTO.getName());
         userRepresentation.setEnabled(true);
+        userRepresentation.setEmailVerified(true);
         userRepresentation.setCredentials(credentials);
 
         return userRepresentation;

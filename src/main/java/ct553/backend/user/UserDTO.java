@@ -23,6 +23,7 @@ public class UserDTO {
     private String email;
     private String avatarUrl;
     private Date dob;
+    private Integer numberOfCart;
     private boolean isBlocked;
     private String blockedByUser;
     private List<String> groups;

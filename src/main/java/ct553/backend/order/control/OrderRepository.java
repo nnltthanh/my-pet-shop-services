@@ -94,6 +94,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                         @Param("currentMonthEnd") LocalDate currentMonthEnd);
 
         @Query("""
+                SELECT COUNT(pcsp) FROM PetCustomerServiceProduct pcsp
+                JOIN ct553.backend.order.entity.Order o ON o.id = pcsp.order.id
+                WHERE pcsp.serviceProduct.id = :serviceProductId
+        """)
+        Long countAllServiceProductUsages(Long serviceProductId);
+
+        @Query("""
                 SELECT new ct553.backend.statistic.DateRevenueReport(o.createDate, SUM(o.total))
                 FROM ct553.backend.order.entity.Order o WHERE o.status = 'FINISHED'
                 AND o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.order.boundary.OrderService;
 import ct553.backend.order.entity.OrderDetail;
-import ct553.backend.product.ProductService;
 import ct553.backend.user.User;
 
 @Service
@@ -17,9 +16,6 @@ public class ReviewService {
 
     @Autowired
     ReviewRepository reviewRepository;
-
-    @Autowired
-    ProductService productService;
 
     @Autowired
     OrderService orderService;
@@ -46,11 +42,15 @@ public class ReviewService {
         return reviewsReverse;
     }
 
-    ArrayList<Review> getAllReviewsByProductId(Long productId) {
+    public ArrayList<Review> getAllReviewsByProductId(Long productId) {
         ArrayList<Review> reviewsDB = this.reviewRepository.findByOrderDetail_ProductDetail_Product_Id(productId);
         ArrayList<Review> reviewsReverse = new ArrayList<>(reviewsDB);
         Collections.reverse(reviewsReverse);
         return reviewsReverse;
+    }
+
+    public Long countAllReviewsByProductId(Long productId) {
+        return this.reviewRepository.countByOrderDetail_ProductDetail_Product_Id(productId);
     }
 
     public Review findReviewById(Long id) {

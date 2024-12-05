@@ -29,7 +29,7 @@ public class PetCategory {
     private Long id;
 
     @Column(nullable = false)
-    @NotNull(message = "Name is missing")
+    @NotNull(message = "Category name is missing")
     private String name;
 
     @Enumerated(EnumType.STRING)

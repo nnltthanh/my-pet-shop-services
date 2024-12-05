@@ -3,6 +3,7 @@ package ct553.backend.review;
 import java.util.ArrayList;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -15,5 +16,15 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     ArrayList<Review> findByOrderDetail_Id(Long orderDetailId);
 
     ArrayList<Review> findByOrderDetail_Order_Id(Long orderId);
+
+    Long countByOrderDetail_ProductDetail_Product_Id(Long productId);
+
+    @Query(value = """
+        SELECT AVG(COALESCE(review.rate, 0))
+        FROM Product product
+        LEFT JOIN ProductDetail detail ON product.id = detail.product.id
+        LEFT JOIN Review review ON product.id = review.orderDetail.productDetail.product.id
+        WHERE product.id = :productId """)
+    Double getRatingByProductId(Long productId);
     
 }

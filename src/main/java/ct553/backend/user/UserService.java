@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import ct553.backend.CloudinaryService;
-import ct553.backend.auth.GroupName;
 import ct553.backend.auth.RoleName;
 import ct553.backend.auth.UserKeycloakSerivce;
 import ct553.backend.imagedata.ImageData;
@@ -54,6 +53,10 @@ public class UserService {
     @Transactional
     public UserDTO login(JwtAuthenticationToken auth) {
         User user = new User();
+        if (auth == null) {
+            return null;
+        }
+        
         user.setAccount(auth.getToken().getClaimAsString(StandardClaimNames.PREFERRED_USERNAME));
         user.setEmail(auth.getToken().getClaimAsString(StandardClaimNames.EMAIL));
         user.setName(auth.getToken().getClaimAsString(StandardClaimNames.NAME));
@@ -67,7 +70,6 @@ public class UserService {
         }
 
         UserDTO userDTO = UserDTO.from(savedUser);
-
         log.info("userDTO {} ", userDTO);
         this.mapUserGroups(userDTO);
         return userDTO;

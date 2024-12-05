@@ -55,9 +55,7 @@ public class ServiceProductResource {
 
     @GetMapping
     public List<ServiceProduct> findAll() {
-        return this.serviceProductService.findAll()
-                    .stream().filter(p -> p.getValidTo() == null)
-                    .toList();
+        return this.serviceProductService.findAll();
     }
 
     @GetMapping("/types/{type}")

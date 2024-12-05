@@ -30,6 +30,7 @@ public interface PetProductRepository extends JpaRepository<PetProduct, Long> {
         JOIN PetCategory category ON pet.category.id = category.id
         WHERE pet.category.breed IN (:#{#criteria.breeds}) 
         AND pet.price BETWEEN :#{#criteria.priceFrom} AND :#{#criteria.priceTo}
+        AND (LOWER(pet.category.name) LIKE LOWER(:#{#criteria.keyword}) OR LOWER(pet.name) LIKE LOWER(:#{#criteria.keyword}))
         GROUP BY pet, category
         """)
     Page<PetProduct> findAllBy(@Param("criteria") ProductSearchingCriteria searchingCriteria, Pageable pageable);

@@ -58,7 +58,7 @@ public class Product {
     private Long id;
 
     @Column(nullable = false)
-    @NotNull(message = "Name is missing")
+    @NotNull(message = "Product name is missing")
     private String name;
 
     @Column

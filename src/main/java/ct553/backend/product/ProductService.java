@@ -22,6 +22,7 @@ import ct553.backend.imagedata.ImageData;
 import ct553.backend.pet.healthrecord.HealthRecord;
 import ct553.backend.product.pet.PetProduct;
 import ct553.backend.product.productdetail.ProductDetailService;
+import ct553.backend.review.ReviewRepository;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -33,6 +34,9 @@ public class ProductService {
 
     @Autowired
     private ProductDetailService productDetailService;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     void addProduct(Product product) {
         product.setEngName(this.deAccent(product.getName()));
@@ -46,12 +50,23 @@ public class ProductService {
         } else if (searchingCriteria != null && searchingCriteria.getKeyword() != null) {
             searchingCriteria.setKeyword("%" + searchingCriteria.getKeyword() + "%");
         }
-        System.out.println(searchingCriteria);
-        Page<Product> products = productRepository.findAllBy(
+        Page<Product> products = null;
+
+        if (sortingCriteria.getDesc().indexOf("rating") > -1) {
+            products = productRepository.findAllByAndRatingDesc(
                 searchingCriteria,
                 PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)));
+        }
+        else {
+            products = productRepository.findAllBy(
+                searchingCriteria,
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), buildSortCriteria(sortingCriteria)));
+        }
+
         List<Product> data = new ArrayList<>(products.stream().map(p -> {
             p.setCountSold(this.productDetailService.countSoldByProductId(p.getId()));
+            p.setRating(this.reviewRepository.getRatingByProductId(p.getId()));
+            p.setCountRating(this.reviewRepository.countByOrderDetail_ProductDetail_Product_Id(p.getId()));
             return p;
         }).toList());
 
@@ -68,6 +83,9 @@ public class ProductService {
         }
         if (product != null) {
             product.setProductDetails(this.productDetailService.getAllProductDetails(id));
+            product.setCountSold(this.productDetailService.countSoldByProductId(product.getId()));
+            product.setRating(this.reviewRepository.getRatingByProductId(product.getId()));
+            product.setCountRating(this.reviewRepository.countByOrderDetail_ProductDetail_Product_Id(product.getId()));
         }
         return product;
     }
@@ -142,9 +160,18 @@ public class ProductService {
         if (Objects.isNull(sortingCriteria) || sortingCriteria.isEmptySortingCriteria()) {
             return Sort.by(Direction.DESC, "updatedAt");
         }
+
         List<Sort.Order> orders = new ArrayList<>();
-        sortingCriteria.getAsc().stream().forEach(value -> orders.add(Sort.Order.by(value).with(Direction.ASC)));
-        sortingCriteria.getDesc().stream().forEach(value -> orders.add(Sort.Order.by(value).with(Direction.DESC)));
+        sortingCriteria.getAsc().stream().forEach(value -> {
+            if (!value.equals("rating")) {
+                orders.add(Sort.Order.by(value).with(Direction.ASC));
+            }
+        });
+        sortingCriteria.getDesc().stream().forEach(value -> {
+            if (!value.equals("rating")) {
+                orders.add(Sort.Order.by(value).with(Direction.DESC));
+            }
+        });
         return CollectionUtils.isEmpty(orders) ? Sort.unsorted() : Sort.by(orders);
     }
 

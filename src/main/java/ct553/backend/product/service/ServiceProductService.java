@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ct553.backend.CloudinaryServiceImp;
 import ct553.backend.imagedata.ImageData;
 import ct553.backend.imagedata.ImageDataType;
+import ct553.backend.order.control.OrderRepository;
 import ct553.backend.pet.boundary.PetCategoryService;
 import ct553.backend.pet.healthrecord.HealthRecord;
 import ct553.backend.product.productdetail.ProductDetail;
@@ -32,6 +33,9 @@ public class ServiceProductService {
 
     @Autowired
     private CloudinaryServiceImp cloudinaryService;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Autowired
     ProductDetailService productDetailService;
@@ -63,11 +67,21 @@ public class ServiceProductService {
     }
 
     public List<ServiceProduct> findAllByType(ServiceProductType type) {
-        return serviceProductRepository.findAllByType(type);
+        return serviceProductRepository.findAllByType(type).stream()
+            .map((data) -> {
+                data.setCountSold(this.orderRepository.countAllServiceProductUsages(data.getId()));
+                return data;
+            }).toList();
     }
 
     public List<ServiceProduct> findAll() {
-        return serviceProductRepository.findAll();
+        return serviceProductRepository.findAll()
+                    .stream().filter(p -> p.getValidTo() == null)
+                    .map((data) -> {
+                        data.setCountSold(this.orderRepository.countAllServiceProductUsages(data.getId()));
+                        return data;
+                    })
+                    .toList();
     }
 
     @Transactional

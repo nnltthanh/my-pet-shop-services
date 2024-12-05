@@ -40,10 +40,7 @@ public class CartResource {
     @RolesAllowed({RoleName.CUSTOMER})
     public ResponseEntity<?> getCart(@PathVariable Long customerId) {
         ArrayList<CartDetail> cartDetails = this.cartService.getAllCartDetails(customerId);
-        if (cartDetails.size() > 0) {
-            return new ResponseEntity<>(cartDetails, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(cartDetails, HttpStatus.OK);
     }
 
     @GetMapping("/{cartDetailId}")

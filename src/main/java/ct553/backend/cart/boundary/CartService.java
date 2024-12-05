@@ -50,6 +50,10 @@ public class CartService {
 
         if (cartDetailDB != null) {
             newQuantity += cartDetailDB.getQuantity();
+
+            if (newQuantity > productDetail.getQuantity()) {
+                newQuantity = productDetail.getQuantity();
+            }
         }
 
         int remainingQuantity = productDetail.getQuantity() - newQuantity;
@@ -78,8 +82,27 @@ public class CartService {
         return null;
     }
 
-    ArrayList<CartDetail> getAllCartDetails(Long customerId) {
+    public ArrayList<CartDetail> getAllCartDetails(Long customerId) {
         Cart cart = this.findCartByCustomerId(customerId);
+
+        if (cart.getCartDetails() != null && cart.getCartDetails().size() > 0) {
+            for (int i = 0; i < cart.getCartDetails().size(); i++) {
+                CartDetail cd = cart.getCartDetails().get(i);
+
+                if (cd.getQuantity() > cd.getProductDetail().getQuantity() - cd.getProductDetail().getSold()) {
+                    cd.setQuantity(cd.getProductDetail().getQuantity() - cd.getProductDetail().getSold());
+                    if (cd.getQuantity() == 0) {
+                        this.deleteCartDetail(cd.getId());
+                        cart.getCartDetails().removeIf((cd2) -> cd2.getId().equals(cd.getId()));
+                    }
+                    else {
+                        CartDetail updatedCartDetail = this.updateCartDetail(cd);
+                        cart.getCartDetails().set(i, updatedCartDetail);
+                    }
+                }
+            }
+        }
+
         return new ArrayList<>(cart.getCartDetails());
     }
 

@@ -59,6 +59,9 @@ public class User {
         @Column
         private String name;
 
+        @Column(length = 20)
+        private String emplCode;
+
         @Column(length = 12)
         private String phone;
 
