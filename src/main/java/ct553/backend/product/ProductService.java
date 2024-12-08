@@ -2,9 +2,12 @@ package ct553.backend.product;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,6 +25,7 @@ import ct553.backend.imagedata.ImageData;
 import ct553.backend.pet.healthrecord.HealthRecord;
 import ct553.backend.product.pet.PetProduct;
 import ct553.backend.product.productdetail.ProductDetailService;
+import ct553.backend.review.Review;
 import ct553.backend.review.ReviewRepository;
 import jakarta.transaction.Transactional;
 
@@ -64,11 +68,19 @@ public class ProductService {
         }
 
         List<Product> data = new ArrayList<>(products.stream().map(p -> {
+            ArrayList<Review> reviews = this.getAllReviewsByProductId(p.getId());
             p.setCountSold(this.productDetailService.countSoldByProductId(p.getId()));
-            p.setRating(this.reviewRepository.getRatingByProductId(p.getId()));
-            p.setCountRating(this.reviewRepository.countByOrderDetail_ProductDetail_Product_Id(p.getId()));
+            double rate = 0.0;
+            for (Review review : reviews) {
+                rate += review.getRate();
+            }
+            p.setRating(rate);
+            p.setCountRating(getAllReviewsByProductId(p.getId()).size());
+            // p.setRating(this.reviewRepository.getRatingByProductId(p.getId()));
+            // p.setCountRating(this.reviewRepository.countByOrderDetail_ProductDetail_Product_Id(p.getId()));
             return p;
         }).toList());
+
 
         return ProductOverviewResponse.fromProducts(products.getTotalElements(), data);
     }
@@ -82,12 +94,48 @@ public class ProductService {
             ((PetProduct) product).setLatestHealthRecord(latestHealthRecord);
         }
         if (product != null) {
+            ArrayList<Review> reviews = this.getAllReviewsByProductId(product.getId());
             product.setProductDetails(this.productDetailService.getAllProductDetails(id));
             product.setCountSold(this.productDetailService.countSoldByProductId(product.getId()));
-            product.setRating(this.reviewRepository.getRatingByProductId(product.getId()));
-            product.setCountRating(this.reviewRepository.countByOrderDetail_ProductDetail_Product_Id(product.getId()));
+            // product.setRating(this.reviewRepository.getRatingByProductId(product.getId()));
+            // product.setCountRating(this.reviewRepository.countByOrderDetail_ProductDetail_Product_Id(product.getId()));
+            
+            double rate = 0.0;
+            for (Review review : reviews) {
+                rate += review.getRate();
+            }
+            product.setRating(rate);
+            product.setCountRating(getAllReviewsByProductId(id).size());
         }
         return product;
+    }
+
+    public ArrayList<Review> getAllReviewsByProductId(Long productId) {
+        ArrayList<Review> reviewsDB = new ArrayList<>(
+            this.reviewRepository.findByOrderDetail_ProductDetail_Product_Id(productId)
+                                    .stream()
+                                    .filter(r -> r.getEmployee() == null)
+                                    .distinct()
+                                    .sorted(Comparator.comparing(Review::getCreateDate).reversed())
+                                    .toList()
+
+        );
+        reviewsDB = new ArrayList<>(removeDuplicate(reviewsDB)); 
+        ArrayList<Review> reviewsReverse = new ArrayList<>(reviewsDB);
+        Collections.reverse(reviewsReverse);
+        return reviewsReverse;
+    }
+
+    private List<Review> removeDuplicate(List<Review> reviewsDB) {
+        Map<Long, Review> newMap = new HashMap<>();
+
+        for (Review review : reviewsDB) {
+            newMap.put(review.getOrderDetail().getId(), review);
+        }
+
+        return new ArrayList<>(newMap.values()).stream()
+            .sorted(Comparator.comparing(Review::getCreateDate))
+            .toList();
     }
 
     public Product updateProduct(Long id, Product productUpdateInfo) {

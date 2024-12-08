@@ -43,8 +43,8 @@ public class PetServiceVariant {
     @Column(name = "pet_service_variant_id")
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private PetBreed suitableFor;
+    // @Enumerated(EnumType.STRING)
+    // private PetBreed suitableFor;
 
     @Column(name = "created_at")
     @Temporal(value = TemporalType.TIMESTAMP)

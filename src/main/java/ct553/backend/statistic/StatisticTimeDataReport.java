@@ -1,18 +1,12 @@
 package ct553.backend.statistic;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import ct553.backend.order.entity.Order;
 import ct553.backend.order.entity.OrderDetail;
-import ct553.backend.product.Product;
 import ct553.backend.product.service.PetCustomerServiceProduct;
 import ct553.backend.statistic.StatisticTimeData.StatisticFilterPeriod;
-import ct553.backend.statistic.StatisticTimeData.StatisticFilterType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +24,10 @@ import lombok.NoArgsConstructor;
 public class StatisticTimeDataReport {
 
     private StatisticFilterPeriod period;
+
+    private String startDate;
+
+    private String endDate;
 
     List<Order> ordersByPeriods;
 

@@ -115,6 +115,7 @@ public class User {
                 this.validTo = user.getValidTo();
                 this.avatar = user.getAvatar();
                 this.createdAt = user.getCreatedAt();
+                this.emplCode = user.getEmplCode();
         }
 
         public static User from(UserDTO userDto) {
@@ -125,6 +126,7 @@ public class User {
                         .phone(userDto.getPhone())
                         .email(userDto.getEmail())
                         .dob(userDto.getDob())
+                        .emplCode(userDto.getEmplCode())
                         .build();
         }
         

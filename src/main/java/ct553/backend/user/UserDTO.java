@@ -26,6 +26,7 @@ public class UserDTO {
     private Integer numberOfCart;
     private boolean isBlocked;
     private String blockedByUser;
+    private String emplCode;
     private List<String> groups;
 
     public static UserDTO from(User user) {
@@ -41,6 +42,7 @@ public class UserDTO {
                 .dob(user.getDob())
                 .isBlocked(user.getValidTo() == null ? false : true)
                 .avatarUrl(user.getAvatar() == null ? null : user.getAvatar().getImageUrls())
+                .emplCode(user.getEmplCode())
                 .build();
     }
 

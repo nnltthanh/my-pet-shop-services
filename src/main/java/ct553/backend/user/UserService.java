@@ -34,12 +34,6 @@ public class UserService {
     @Autowired
     UserKeycloakSerivce userKeycloakSerivce;
 
-    // @Autowired
-    // CustomerService customerService;
-
-    // @Autowired
-    // EmployeeService employeeService;
-
     @Autowired
     CloudinaryService cloudinaryService;
 
@@ -106,24 +100,20 @@ public class UserService {
                 .toList();
     }
 
-    // @Transactional
-    // public void add(UserDTO user, MultipartFile avatar) throws IOException {
-    //     if (user.getId() == null || this.findById(user.getId()) == null) {
-    //         // this.userKeycloakSerivce.createUser(user);
-    //         User beSavedUser = User.from(user);
-    //         if (avatar != null) {
-    //             String imageUrl = this.cloudinaryService.uploadFile(avatar);
-    //             ImageData imageData = new ImageData(null, imageUrl, ImageDataType.AVATAR);
-    //             beSavedUser.setAvatar(imageData);
-    //         }
-
-    //         if (user.getGroups().indexOf("Khách hàng") != -1) {
-    //             this.customerService.add(new Customer(beSavedUser));
-    //         } else {
-    //             this.employeeService.add(new Employee(beSavedUser));
-    //         }
-    //     }
-    // }
+    @Transactional
+    public void add(UserDTO user, MultipartFile avatar) throws IOException {
+        if (user.getId() == null || this.findById(user.getId()) == null) {
+            this.userKeycloakSerivce.createUser(user);
+            User beSavedUser = User.from(user);
+            if (avatar != null) {
+                String imageUrl = this.cloudinaryService.uploadFile(avatar);
+                ImageData imageData = new ImageData(null, imageUrl, ImageDataType.AVATAR);
+                beSavedUser.setAvatar(imageData);
+            }
+            System.out.println(user);
+            this.userRepository.save(beSavedUser);
+        }
+    }
 
     @Transactional
     public void deleteById(Long id) {

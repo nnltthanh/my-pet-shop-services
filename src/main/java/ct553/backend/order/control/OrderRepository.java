@@ -54,7 +54,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
         @Query("""
                 SELECT COALESCE(SUM(o.total), 0)
-                FROM ct553.backend.order.entity.Order o WHERE o.status = 'FINISHED'
+                FROM ct553.backend.order.entity.Order o WHERE (o.status = 'FINISHED' OR o.status = 'DELIVERED')
                 AND o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd
         """)
         BigDecimal sumOfFinishedOrdersInCurrentMonth(@Param("currentMonthStart") LocalDate currentMonthStart,
@@ -102,7 +102,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
         @Query("""
                 SELECT new ct553.backend.statistic.DateRevenueReport(o.createDate, SUM(o.total))
-                FROM ct553.backend.order.entity.Order o WHERE o.status = 'FINISHED'
+                FROM ct553.backend.order.entity.Order o 
+                WHERE (o.status = 'FINISHED' OR o.status = 'DELIVERED')
                 AND o.createDate >= :currentMonthStart AND o.createDate <= :currentMonthEnd
                 GROUP BY o.createDate
         """)

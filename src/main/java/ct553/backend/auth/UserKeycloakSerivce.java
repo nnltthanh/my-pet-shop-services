@@ -26,13 +26,23 @@ public class UserKeycloakSerivce {
         Response response = getKeycloak().realm("petshoprealm").users().create(this.userDtoToUserRepresentation(user));
         if (response != null && response.getStatusInfo().getFamily() == Family.SUCCESSFUL && user.getGroups() != null && !user.getGroups().isEmpty()) 
         {
+            boolean isCustomer = user.getGroups().indexOf("CUSTOMER") > -1;
             for (String group : user.getGroups()) {
-
+                System.out.println(group);
+                System.out.println(GroupName.groupNameIdMap.get(group));
                 getKeycloak().realm("petshoprealm")
                             .users()
                             .get(CreatedResponseUtil.getCreatedId(response))
                             .joinGroup(GroupName.groupNameIdMap.get(group)); // use group id
             }
+
+            if (!isCustomer) {
+                getKeycloak().realm("petshoprealm")
+                            .users()
+                            .get(CreatedResponseUtil.getCreatedId(response))
+                            .leaveGroup(GroupName.CUSTOMER); // remove default group (CUSTOMER) if not CUSTOMER
+            }
+
         }
     }
 

@@ -17,6 +17,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     ArrayList<Review> findByOrderDetail_Order_Id(Long orderId);
 
+    @Query(value = """
+        SELECT COUNT(DISTINCT review)
+        FROM Product product
+        LEFT JOIN ProductDetail detail ON product.id = detail.product.id
+        LEFT JOIN Review review ON product.id = review.orderDetail.productDetail.product.id
+        WHERE product.id = :productId AND review.employee IS NULL"""
+    )
     Long countByOrderDetail_ProductDetail_Product_Id(Long productId);
 
     @Query(value = """
@@ -24,7 +31,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         FROM Product product
         LEFT JOIN ProductDetail detail ON product.id = detail.product.id
         LEFT JOIN Review review ON product.id = review.orderDetail.productDetail.product.id
-        WHERE product.id = :productId """)
+        WHERE product.id = :productId AND review.employee IS NULL
+       """)
     Double getRatingByProductId(Long productId);
     
-}
+}   

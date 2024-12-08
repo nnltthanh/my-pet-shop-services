@@ -2,6 +2,14 @@ package ct553.backend.review;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,10 +51,31 @@ public class ReviewService {
     }
 
     public ArrayList<Review> getAllReviewsByProductId(Long productId) {
-        ArrayList<Review> reviewsDB = this.reviewRepository.findByOrderDetail_ProductDetail_Product_Id(productId);
+        ArrayList<Review> reviewsDB = new ArrayList<>(
+            this.reviewRepository.findByOrderDetail_ProductDetail_Product_Id(productId)
+                                    .stream()
+                                    .filter(r -> r.getEmployee() == null)
+                                    .distinct()
+                                    .sorted(Comparator.comparing(Review::getCreateDate).reversed())
+                                    .toList()
+
+        );
+        reviewsDB = new ArrayList<>(removeDuplicate(reviewsDB)); 
         ArrayList<Review> reviewsReverse = new ArrayList<>(reviewsDB);
         Collections.reverse(reviewsReverse);
         return reviewsReverse;
+    }
+
+    private List<Review> removeDuplicate(List<Review> reviewsDB) {
+        Map<Long, Review> newMap = new HashMap<>();
+
+        for (Review review : reviewsDB) {
+            newMap.put(review.getOrderDetail().getId(), review);
+        }
+
+        return new ArrayList<>(newMap.values()).stream()
+            .sorted(Comparator.comparing(Review::getCreateDate))
+            .toList();
     }
 
     public Long countAllReviewsByProductId(Long productId) {

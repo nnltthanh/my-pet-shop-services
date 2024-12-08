@@ -16,8 +16,11 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -46,11 +49,19 @@ public class ProductExporterService {
     
     private XSSFSheet sheet;
 
-    private void writeHeaderLineForOrderSheet() {
+    private void writeHeaderLineForOrderSheet(StatisticTimeDataReport dataReport) {
         sheet = workbook.createSheet("Đơn hàng đã bán");
-         
-        Row row = sheet.createRow(0);
         CellStyle style = createCellStyleForHeader();
+         
+        Row rowHeader = sheet.createRow(0);
+        CellStyle headerCellStyle = createCellStyleForHeader();
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+
+        createCell(rowHeader, 0, "THỐNG KÊ ĐƠN HÀNG ĐÃ BÁN TỪ " + dataReport.getStartDate() + " ĐẾN " + dataReport.getEndDate(), headerCellStyle);
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 7));
+
+        Row row = sheet.createRow(1);
         
         createCell(row, 0, "ID đơn hàng", style);      
         createCell(row, 1, "Khách hàng", style);
@@ -62,11 +73,20 @@ public class ProductExporterService {
         createCell(row, 7, "Ghi chú", style);
     }
 
-    private void writeHeaderLineForProductSheet() {
+    private void writeHeaderLineForProductSheet(StatisticTimeDataReport dataReport) {
         sheet = workbook.createSheet("Sản phẩm đã bán");
          
-        Row row = sheet.createRow(0);
         CellStyle style = createCellStyleForHeader();
+         
+        Row rowHeader = sheet.createRow(0);
+        CellStyle headerCellStyle = createCellStyleForHeader();
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+
+        createCell(rowHeader, 0, "THỐNG KÊ SẢN PHẨM ĐÃ BÁN TỪ " + dataReport.getStartDate() + " ĐẾN " + dataReport.getEndDate(), headerCellStyle);
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 6));
+
+        Row row = sheet.createRow(1);
 
         createCell(row, 0, "ID sản phẩm", style);      
         createCell(row, 1, "Tên sản phẩm", style);
@@ -77,11 +97,20 @@ public class ProductExporterService {
         createCell(row, 6, "Giống thú nuôi", style);
     }
      
-    private void writeHeaderLineForServiceSheet() {
+    private void writeHeaderLineForServiceSheet(StatisticTimeDataReport dataReport) {
         sheet = workbook.createSheet("Dịch vụ sử dụng");
          
-        Row row = sheet.createRow(0);
         CellStyle style = createCellStyleForHeader();
+         
+        Row rowHeader = sheet.createRow(0);
+        CellStyle headerCellStyle = createCellStyleForHeader();
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+
+        createCell(rowHeader, 0, "THỐNG KÊ DỊCH VỤ ĐƯỢC SỬ DỤNG TỪ " + dataReport.getStartDate() + " ĐẾN " + dataReport.getEndDate(), headerCellStyle);
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 7));
+
+        Row row = sheet.createRow(1);
 
         createCell(row, 0, "ID dịch vụ", style);      
         createCell(row, 1, "Tên dịch vụ", style);
@@ -93,11 +122,19 @@ public class ProductExporterService {
         createCell(row, 7, "Ghi chú", style);
     }
 
-    private void writeHeaderLineForRevenueSheet() {
+    private void writeHeaderLineForRevenueSheet(StatisticTimeDataReport dataReport) {
         sheet = workbook.createSheet("Doanh thu đạt được");
-         
-        Row row = sheet.createRow(0);
         CellStyle style = createCellStyleForHeader();
+        
+        Row rowHeader = sheet.createRow(0);
+        CellStyle headerCellStyle = createCellStyleForHeader();
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+
+        createCell(rowHeader, 0, "THỐNG KÊ DOANH THU TỪ " + dataReport.getStartDate() + " ĐẾN " + dataReport.getEndDate(), headerCellStyle);
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 1));
+
+        Row row = sheet.createRow(1);
 
         createCell(row, 0, "Ngày tính", style);      
         createCell(row, 1, "Tổng doanh thu", style);
@@ -178,7 +215,7 @@ public class ProductExporterService {
     }
      
     private void writeDataLinesForOrderSheet(List<Order> orders) {
-        int rowCount = 1;
+        int rowCount = 2;
         CellStyle style = createCellStyleForDataLine();
                  
         for (Order order : orders) {
@@ -212,7 +249,7 @@ public class ProductExporterService {
     }
 
     private void writeDataLinesForRevenueSheet(List<DateRevenueReport> revenues) {
-        int rowCount = 1;
+        int rowCount = 2;
         CellStyle style = createCellStyleForDataLine();
                  
         for (DateRevenueReport revenueReport : revenues) {
@@ -225,7 +262,7 @@ public class ProductExporterService {
     }
 
     private void writeDataLinesForProductSheet(List<OrderDetail> orders) {
-        int rowCount = 1;
+        int rowCount = 2;
         CellStyle style = createCellStyleForDataLine();
                  
         for (OrderDetail order : orders) {
@@ -243,7 +280,7 @@ public class ProductExporterService {
     }
 
     private void writeDataLinesForServiceSheet(List<PetCustomerServiceProduct> petCustomerServiceProducts) {
-        int rowCount = 1;
+        int rowCount = 2;
         CellStyle style = createCellStyleForDataLine();
                  
         for (PetCustomerServiceProduct petCustomerServiceProduct : petCustomerServiceProducts) {
@@ -287,16 +324,16 @@ public class ProductExporterService {
         StatisticTimeDataReport dataReport = this.statisticService.getReportStatisticByFilter(period);
         this.workbook = new XSSFWorkbook();
 
-        writeHeaderLineForRevenueSheet();
+        writeHeaderLineForRevenueSheet(dataReport);
         writeDataLinesForRevenueSheet(dataReport.getRevenuesByPeriods());
 
-        writeHeaderLineForOrderSheet();
+        writeHeaderLineForOrderSheet(dataReport);
         writeDataLinesForOrderSheet(dataReport.getOrdersByPeriods());
 
-        writeHeaderLineForProductSheet();
+        writeHeaderLineForProductSheet(dataReport);
         writeDataLinesForProductSheet(dataReport.getProductsByPeriods());
 
-        writeHeaderLineForServiceSheet();
+        writeHeaderLineForServiceSheet(dataReport);
         writeDataLinesForServiceSheet(dataReport.getServicesByPeriods());
 
         ServletOutputStream outputStream = response.getOutputStream();

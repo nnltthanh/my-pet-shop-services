@@ -74,7 +74,7 @@ public class UserResource {
                         @RequestPart(value = "avatar", required = false) MultipartFile avatar) throws IOException {
         UserDTO isExistedUser = this.userService.findByAccount(user.getAccount());
         if (isExistedUser == null) {
-            // this.userService.add(user, avatar);
+            this.userService.add(user, avatar);
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

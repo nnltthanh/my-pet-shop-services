@@ -5,11 +5,13 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -303,6 +305,13 @@ public class StatisticService {
             // .sorted(Comparator.comparing(DateRevenueReport::getDate))
             // .toList()
             );
+
+        DateTimeFormatter formatters = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String startCurrentDateString = startCurrentDate == null ? StringUtils.EMPTY : startCurrentDate.format(formatters);
+        String endCurrentDateString = endCurrentDate == null ? StringUtils.EMPTY : endCurrentDate.format(formatters);
+
+        data.setStartDate(startCurrentDateString);
+        data.setEndDate(endCurrentDateString);
         data.setPeriod(period);
 
         return data;
